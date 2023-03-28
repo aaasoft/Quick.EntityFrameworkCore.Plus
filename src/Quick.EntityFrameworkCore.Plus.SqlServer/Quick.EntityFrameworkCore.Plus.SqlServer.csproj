@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<Version>5.0.0</Version>
+		<Authors>scbeta</Authors>
+		<PackageProjectUrl>https://github.com/aaasoft/Quick.EntityFrameworkCore.Plus</PackageProjectUrl>
+		<Description>为EntityFrameworkCore添加缓存与依赖管理支持</Description>
+		<RepositoryUrl>https://github.com/aaasoft/Quick.EntityFrameworkCore.Plus</RepositoryUrl>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.17" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Quick.EntityFrameworkCore.Plus\Quick.EntityFrameworkCore.Plus.csproj" />
+	</ItemGroup>
+</Project>
