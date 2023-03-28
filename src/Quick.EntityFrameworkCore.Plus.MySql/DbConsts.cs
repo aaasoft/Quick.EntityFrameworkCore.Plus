@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Quick.EntityFrameworkCore.Plus
+namespace Quick.EntityFrameworkCore.Plus.MySql
 {
     public class DbConsts
     {
