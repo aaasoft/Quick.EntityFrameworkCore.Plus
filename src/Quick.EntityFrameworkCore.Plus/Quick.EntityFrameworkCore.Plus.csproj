@@ -12,9 +12,9 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="DbContextBackup" Version="5.0.3" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.17" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="5.0.17" />
+		<PackageReference Include="DbContextBackup" Version="6.0.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.16" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.16" />
 		<PackageReference Include="Quick.Fields" Version="1.1.8" />
 	</ItemGroup>
 
