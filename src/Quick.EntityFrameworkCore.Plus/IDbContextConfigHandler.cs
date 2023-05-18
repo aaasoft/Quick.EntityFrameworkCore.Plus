@@ -31,6 +31,12 @@ namespace Quick.EntityFrameworkCore.Plus
         /// <param name="dbContextType">数据库上下文类型</param>
         void DatabaseEnsureCreated(Type dbContextType);
         /// <summary>
+        /// 确保数据库
+        /// </summary>
+        /// <param name="dbContext"></param>
+        /// <param name="logger"></param>
+        void DatabaseEnsureCreatedAndUpdated(DbContext dbContext, Action<string> logger = null);
+        /// <summary>
         /// 创建
         /// </summary>
         /// <param name="dbContextType">数据库上下文类型</param>

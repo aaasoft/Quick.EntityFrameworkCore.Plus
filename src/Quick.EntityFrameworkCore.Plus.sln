@@ -5,13 +5,13 @@ VisualStudioVersion = 17.5.33516.290
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Quick.EntityFrameworkCore.Plus", "Quick.EntityFrameworkCore.Plus\Quick.EntityFrameworkCore.Plus.csproj", "{F10318BF-78F3-4EA9-8D81-8D45BB6021DB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Quick.EntityFrameworkCore.Plus.SQLite", "Quick.EntityFrameworkCore.Plus.SQLite\Quick.EntityFrameworkCore.Plus.SQLite.csproj", "{C880F4A4-4A1C-431D-A348-E8C3217FB54A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Quick.EntityFrameworkCore.Plus.SQLite", "Quick.EntityFrameworkCore.Plus.SQLite\Quick.EntityFrameworkCore.Plus.SQLite.csproj", "{C880F4A4-4A1C-431D-A348-E8C3217FB54A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Quick.EntityFrameworkCore.Plus.SqlServer", "Quick.EntityFrameworkCore.Plus.SqlServer\Quick.EntityFrameworkCore.Plus.SqlServer.csproj", "{7C08BFA8-EB4A-4895-B989-400CD34DDE9D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Quick.EntityFrameworkCore.Plus.SqlServer", "Quick.EntityFrameworkCore.Plus.SqlServer\Quick.EntityFrameworkCore.Plus.SqlServer.csproj", "{7C08BFA8-EB4A-4895-B989-400CD34DDE9D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Quick.EntityFrameworkCore.Plus.MySql", "Quick.EntityFrameworkCore.Plus.MySql\Quick.EntityFrameworkCore.Plus.MySql.csproj", "{43445E78-C822-481D-B725-B367078B6AE7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Quick.EntityFrameworkCore.Plus.MySql", "Quick.EntityFrameworkCore.Plus.MySql\Quick.EntityFrameworkCore.Plus.MySql.csproj", "{43445E78-C822-481D-B725-B367078B6AE7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Quick.EntityFrameworkCore.Plus.Dm", "Quick.EntityFrameworkCore.Plus.Dm\Quick.EntityFrameworkCore.Plus.Dm.csproj", "{8729D3B4-89C9-458D-ACAF-39DC03383C4A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Quick.EntityFrameworkCore.Plus.Dm", "Quick.EntityFrameworkCore.Plus.Dm\Quick.EntityFrameworkCore.Plus.Dm.csproj", "{8729D3B4-89C9-458D-ACAF-39DC03383C4A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

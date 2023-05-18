@@ -32,7 +32,7 @@ namespace Quick.EntityFrameworkCore.Plus
             this.instanceConfigHandler = instanceConfigHandler;
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        private IDbContextConfigHandler GetCurrentConfigHandler()
         {
             //先取实例的变量
             var currentConfigHandler = instanceConfigHandler;
@@ -41,6 +41,12 @@ namespace Quick.EntityFrameworkCore.Plus
                 currentConfigHandler = ConfigHandler;
             if (currentConfigHandler == null)
                 throw new ArgumentNullException(nameof(currentConfigHandler));
+            return currentConfigHandler;
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            var currentConfigHandler = GetCurrentConfigHandler();
             currentConfigHandler.OnConfiguring(optionsBuilder);
         }
 
@@ -48,6 +54,12 @@ namespace Quick.EntityFrameworkCore.Plus
         {
             base.OnModelCreating(modelBuilder);
             ModelBuilderHandler(modelBuilder);
+        }
+
+        public void DatabaseEnsureCreatedAndUpdated(Action<string> logger = null)
+        {
+            var currentConfigHandler = GetCurrentConfigHandler();
+            currentConfigHandler.DatabaseEnsureCreatedAndUpdated(this, logger);
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Quick.Fields;
+using System.Data;
+using System.Data.Common;
 
 namespace Quick.EntityFrameworkCore.Plus.SQLite
 {
@@ -10,7 +12,7 @@ namespace Quick.EntityFrameworkCore.Plus.SQLite
 
         public override string Name => "SQLite";
         public string FileName { get; set; }
-        
+
         public override FieldForGet[] GetFields() => new FieldForGet[]
         {
             new FieldForGet(){ Id=nameof(FileName), Name="数据库文件", Input_AllowBlank=false, Type = FieldType.InputText, Value=FileName }
@@ -40,6 +42,24 @@ namespace Quick.EntityFrameworkCore.Plus.SQLite
 
         public override void Validate()
         {
+        }
+
+        protected override string[] GetTableColumns(DbConnection dbConnection, string tableName)
+        {
+            List<string> columnList = new List<string>();
+            using (var cmd = dbConnection.CreateCommand())
+            {
+                cmd.CommandText = $"pragma table_info([{tableName}])";
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var columnName = reader.GetString("name");
+                        columnList.Add(columnName);
+                    }
+                }
+            }
+            return columnList.ToArray();
         }
     }
 }

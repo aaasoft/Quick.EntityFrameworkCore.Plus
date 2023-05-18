@@ -1,6 +1,8 @@
 ﻿using Dm;
 using Microsoft.EntityFrameworkCore;
 using Quick.Fields;
+using System.Data;
+using System.Data.Common;
 
 namespace Quick.EntityFrameworkCore.Plus.Dm
 {
@@ -113,6 +115,24 @@ namespace Quick.EntityFrameworkCore.Plus.Dm
                 dbContext.Database.EnsureCreated();
                 dbContext.SaveChanges();
             }
+        }
+
+        protected override string[] GetTableColumns(DbConnection dbConnection, string tableName)
+        {
+            List<string> columnList = new List<string>();
+            using (var cmd = dbConnection.CreateCommand())
+            {
+                cmd.CommandText = $"select COLUMN_NAME from all_tab_columns where owner='{Database}' and Table_Name='{tableName}'";
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var columnName = reader.GetString("COLUMN_NAME");
+                        columnList.Add(columnName);
+                    }
+                }
+            }
+            return columnList.ToArray();
         }
     }
 }

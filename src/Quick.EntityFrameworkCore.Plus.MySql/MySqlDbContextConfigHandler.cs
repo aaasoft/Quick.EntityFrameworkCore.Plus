@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MySql.Data.MySqlClient;
 using Quick.Fields;
+using System.Data;
+using System.Data.Common;
 
 namespace Quick.EntityFrameworkCore.Plus.MySql
 {
@@ -61,6 +63,24 @@ namespace Quick.EntityFrameworkCore.Plus.MySql
                 throw new ArgumentNullException(nameof(Database), "必须输入数据库！");
             if (Port <= 0 || Port > 65535)
                 throw new ArgumentOutOfRangeException(nameof(Port), "端口的范围是1~65535");
+        }
+
+        protected override string[] GetTableColumns(DbConnection dbConnection, string tableName)
+        {
+            List<string> columnList = new List<string>();
+            using (var cmd = dbConnection.CreateCommand())
+            {
+                cmd.CommandText = $"SELECT COLUMN_NAME FROM `information_schema`.`COLUMNS` WHERE TABLE_SCHEMA='{Database}' AND TABLE_NAME='{tableName}'";
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var columnName = reader.GetString("COLUMN_NAME");
+                        columnList.Add(columnName);
+                    }
+                }
+            }
+            return columnList.ToArray();
         }
     }
 }
