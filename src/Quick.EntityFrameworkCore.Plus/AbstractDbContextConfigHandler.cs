@@ -27,10 +27,11 @@ namespace Quick.EntityFrameworkCore.Plus
             //如果是表结构第一次创建，则创建成功后直接返回
             if (dbContext.Database.EnsureCreated())
                 return;
+
+            var isSchemaChanged = false;
             using (var dbConnection = dbContext.Database.GetDbConnection())
             {
                 dbConnection.Open();
-                var isSchemaChanged = false;
                 foreach (var entityType in dbContext.Model.GetEntityTypes().ToArray())
                 {
                     var tableName = entityType.GetTableName();
@@ -45,20 +46,20 @@ namespace Quick.EntityFrameworkCore.Plus
                         break;
                     }
                 }
-                if (isSchemaChanged)
+            }
+            if (isSchemaChanged)
+            {
+                logger?.Invoke($"即将自动更新表结构。。。");
+                var dbContextBackup = new DbContextBackup.DbContextBackupContext();
+                using (var ms = new MemoryStream())
                 {
-                    logger?.Invoke($"即将自动更新表结构。。。");
-                    var dbContextBackup = new DbContextBackup.DbContextBackupContext();
-                    using (var ms = new MemoryStream())
-                    {
-                        //备份
-                        dbContextBackup.Backup(dbContext, ms);
-                        //还原
-                        ms.Position = 0;
-                        dbContextBackup.Restore(dbContext, ms);
-                    }
-                    logger?.Invoke($"表结构更新完成。");
+                    //备份
+                    dbContextBackup.Backup(dbContext, ms);
+                    //还原
+                    ms.Position = 0;
+                    dbContextBackup.Restore(dbContext, ms);
                 }
+                logger?.Invoke($"表结构更新完成。");
             }
         }
 
