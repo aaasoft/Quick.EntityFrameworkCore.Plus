@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using Quick.Fields;
 using System.Data;
 using System.Data.Common;
@@ -49,7 +49,9 @@ namespace Quick.EntityFrameworkCore.Plus.MySql
                 Password = Password,
                 CharacterSet = DbConsts.MYSQL_DEFAULT_CHARSET
             };
-            optionsBuilder.UseMySQL(connectionStringBuilder.GetConnectionString(true), options =>
+            var connectionString = connectionStringBuilder.ConnectionString;
+            var serverVersion = ServerVersion.AutoDetect(connectionString);
+            optionsBuilder.UseMySql(connectionString, serverVersion, options =>
             {
                 options.CommandTimeout(3600);
             });
