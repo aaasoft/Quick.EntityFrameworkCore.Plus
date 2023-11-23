@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Quick.Fields;
 using System.Data;
 using System.Data.Common;
+using System.Runtime.CompilerServices;
 
 namespace Quick.EntityFrameworkCore.Plus.Dm
 {
@@ -86,9 +87,10 @@ namespace Quick.EntityFrameworkCore.Plus.Dm
                 Password = Password,
                 Database = "SYSDBA"
             };
+
             //删除库
             using (var dbContext = new TestDbContext(configHandler))
-                dbContext.Database.ExecuteSqlRaw($"drop schema if exists \"{Database}\" cascade;");
+                dbContext.Database.ExecuteSql($"drop schema if exists \"{Database}\" cascade;");
         }
 
         public override void DatabaseEnsureCreated(Type dbContextType)
