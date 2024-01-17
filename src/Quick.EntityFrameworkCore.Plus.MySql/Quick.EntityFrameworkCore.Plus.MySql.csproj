@@ -10,8 +10,9 @@
 		<Description>Quick.EntityFrameworkCore.Plus的MySQL数据库支持。</Description>
 		<RepositoryUrl>https://github.com/aaasoft/Quick.EntityFrameworkCore.Plus</RepositoryUrl>
 	</PropertyGroup>
+
 	<ItemGroup>
-		<PackageReference Include="MySql.EntityFrameworkCore" Version="6.0.13" />
+	  <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.2" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Quick.EntityFrameworkCore.Plus\Quick.EntityFrameworkCore.Plus.csproj" />
