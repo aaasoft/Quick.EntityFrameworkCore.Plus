@@ -13,9 +13,9 @@
 
 	<ItemGroup>
 		<PackageReference Include="DbContextBackup" Version="8.0.0" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.0" />
-		<PackageReference Include="Quick.Fields" Version="1.1.8" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.10" />
+		<PackageReference Include="Quick.Fields" Version="1.2.4" />
 	</ItemGroup>
 
 </Project>
