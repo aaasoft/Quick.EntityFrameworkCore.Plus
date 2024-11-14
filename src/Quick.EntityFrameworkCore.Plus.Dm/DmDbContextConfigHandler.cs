@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Quick.Fields;
 using System.Data;
 using System.Data.Common;
-using System.Runtime.CompilerServices;
 
 namespace Quick.EntityFrameworkCore.Plus.Dm
 {
@@ -107,7 +106,7 @@ namespace Quick.EntityFrameworkCore.Plus.Dm
             //创建库
             using (var dbContext = new TestDbContext(configHandler))
             {
-                dbContext.Database.ExecuteSqlRaw($"create schema \"{Database}\";");
+                dbContext.Database.ExecuteSql($"create schema \"{Database}\";");
                 dbContext.SaveChanges();
             }
 
