@@ -29,24 +29,24 @@ namespace Quick.EntityFrameworkCore.Plus
                 return;
 
             var isSchemaChanged = false;
-            using (var dbConnection = dbContext.Database.GetDbConnection())
-            {
+            var dbConnection = dbContext.Database.GetDbConnection();
+            if (dbConnection.State != ConnectionState.Open)
                 dbConnection.Open();
-                foreach (var entityType in dbContext.Model.GetEntityTypes().ToArray())
+            foreach (var entityType in dbContext.Model.GetEntityTypes().ToArray())
+            {
+                var tableName = entityType.GetTableName();
+                var tableDefColumns = entityType.GetProperties().Select(t => t.Name).ToArray();
+                var tableCurrentColumns = GetTableColumns(dbConnection, tableName);
+                var tableDefColumnsString = string.Join(",", tableDefColumns.OrderBy(t => t));
+                var tableCurrentColumnsString = string.Join(",", tableCurrentColumns.OrderBy(t => t));
+                if (tableDefColumnsString != tableCurrentColumnsString)
                 {
-                    var tableName = entityType.GetTableName();
-                    var tableDefColumns = entityType.GetProperties().Select(t => t.Name).ToArray();
-                    var tableCurrentColumns = GetTableColumns(dbConnection, tableName);
-                    var tableDefColumnsString = string.Join(",", tableDefColumns.OrderBy(t => t));
-                    var tableCurrentColumnsString = string.Join(",", tableCurrentColumns.OrderBy(t => t));
-                    if (tableDefColumnsString != tableCurrentColumnsString)
-                    {
-                        logger?.Invoke($"发现表[{tableName}]的结构不匹配，定义列：[{string.Join(",", tableDefColumns)}]，当前列：[{string.Join(",", tableCurrentColumns)}]。");
-                        isSchemaChanged = true;
-                        break;
-                    }
+                    logger?.Invoke($"发现表[{tableName}]的结构不匹配，定义列：[{string.Join(",", tableDefColumns)}]，当前列：[{string.Join(",", tableCurrentColumns)}]。");
+                    isSchemaChanged = true;
+                    break;
                 }
             }
+
             if (isSchemaChanged)
             {
                 logger?.Invoke($"即将自动更新表结构。。。");
