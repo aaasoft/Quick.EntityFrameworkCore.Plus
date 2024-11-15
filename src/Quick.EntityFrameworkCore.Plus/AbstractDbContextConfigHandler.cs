@@ -22,31 +22,35 @@ namespace Quick.EntityFrameworkCore.Plus
 
         protected abstract string[] GetTableColumns(DbConnection dbConnection, string tableName);
 
-        public virtual void DatabaseEnsureCreatedAndUpdated(DbContext dbContext, Action<string> logger = null)
+        public virtual void DatabaseEnsureCreatedAndUpdated(Func<DbContext> getDbContextFunc, Action<string> logger = null)
         {
-            //如果是表结构第一次创建，则创建成功后直接返回
-            if (dbContext.Database.EnsureCreated())
-                return;
-
             var isSchemaChanged = false;
-            var dbConnection = dbContext.Database.GetDbConnection();
-            if (dbConnection.State != ConnectionState.Open)
-                dbConnection.Open();
-            foreach (var entityType in dbContext.Model.GetEntityTypes().ToArray())
-            {
-                var tableName = entityType.GetTableName();
-                var tableDefColumns = entityType.GetProperties().Select(t => t.Name).ToArray();
-                var tableCurrentColumns = GetTableColumns(dbConnection, tableName);
-                var tableDefColumnsString = string.Join(",", tableDefColumns.OrderBy(t => t));
-                var tableCurrentColumnsString = string.Join(",", tableCurrentColumns.OrderBy(t => t));
-                if (tableDefColumnsString != tableCurrentColumnsString)
-                {
-                    logger?.Invoke($"发现表[{tableName}]的结构不匹配，定义列：[{string.Join(",", tableDefColumns)}]，当前列：[{string.Join(",", tableCurrentColumns)}]。");
-                    isSchemaChanged = true;
-                    break;
-                }
-            }
 
+            using (var dbContext = getDbContextFunc())
+            {
+                //如果是表结构第一次创建，则创建成功后直接返回
+                if (dbContext.Database.EnsureCreated())
+                    return;
+
+                var dbConnection = dbContext.Database.GetDbConnection();
+                if (dbConnection.State != ConnectionState.Open)
+                    dbConnection.Open();
+                foreach (var entityType in dbContext.Model.GetEntityTypes().ToArray())
+                {
+                    var tableName = entityType.GetTableName();
+                    var tableDefColumns = entityType.GetProperties().Select(t => t.Name).ToArray();
+                    var tableCurrentColumns = GetTableColumns(dbConnection, tableName);
+                    var tableDefColumnsString = string.Join(",", tableDefColumns.OrderBy(t => t));
+                    var tableCurrentColumnsString = string.Join(",", tableCurrentColumns.OrderBy(t => t));
+                    if (tableDefColumnsString != tableCurrentColumnsString)
+                    {
+                        logger?.Invoke($"发现表[{tableName}]的结构不匹配，定义列：[{string.Join(",", tableDefColumns)}]，当前列：[{string.Join(",", tableCurrentColumns)}]。");
+                        isSchemaChanged = true;
+                        break;
+                    }
+                }
+            };
+            
             if (isSchemaChanged)
             {
                 logger?.Invoke($"即将自动更新表结构。。。");
@@ -54,10 +58,12 @@ namespace Quick.EntityFrameworkCore.Plus
                 using (var ms = new MemoryStream())
                 {
                     //备份
-                    dbContextBackup.Backup(dbContext, ms);
+                    using (var dbContext = getDbContextFunc())
+                        dbContextBackup.Backup(dbContext, ms);
                     //还原
                     ms.Position = 0;
-                    dbContextBackup.Restore(dbContext, ms);
+                    using (var dbContext = getDbContextFunc())
+                        dbContextBackup.Restore(dbContext, ms);
                 }
                 logger?.Invoke($"表结构更新完成。");
             }

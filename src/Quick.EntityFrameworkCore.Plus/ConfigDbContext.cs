@@ -55,11 +55,5 @@ namespace Quick.EntityFrameworkCore.Plus
             base.OnModelCreating(modelBuilder);
             ModelBuilderHandler(modelBuilder);
         }
-
-        public void DatabaseEnsureCreatedAndUpdated(Action<string> logger = null)
-        {
-            var currentConfigHandler = GetCurrentConfigHandler();
-            currentConfigHandler.DatabaseEnsureCreatedAndUpdated(this, logger);
-        }
     }
 }

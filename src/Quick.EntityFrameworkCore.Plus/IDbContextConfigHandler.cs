@@ -33,9 +33,9 @@ namespace Quick.EntityFrameworkCore.Plus
         /// <summary>
         /// 确保数据库
         /// </summary>
-        /// <param name="dbContext"></param>
+        /// <param name="getDbContextFunc"></param>
         /// <param name="logger"></param>
-        void DatabaseEnsureCreatedAndUpdated(DbContext dbContext, Action<string> logger = null);
+        void DatabaseEnsureCreatedAndUpdated(Func<DbContext> getDbContextFunc, Action<string> logger = null);
         /// <summary>
         /// 创建
         /// </summary>
