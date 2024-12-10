@@ -38,7 +38,7 @@ namespace Quick.EntityFrameworkCore.Plus
                 foreach (var entityType in dbContext.Model.GetEntityTypes().ToArray())
                 {
                     var tableName = entityType.GetTableName();
-                    var tableDefColumns = entityType.GetProperties().Select(t => t.Name).ToArray();
+                    var tableDefColumns = entityType.GetProperties().Select(t => t.GetColumnName()).ToArray();
                     var tableCurrentColumns = GetTableColumns(dbConnection, tableName);
                     var tableDefColumnsString = string.Join(",", tableDefColumns.OrderBy(t => t));
                     var tableCurrentColumnsString = string.Join(",", tableCurrentColumns.OrderBy(t => t));
