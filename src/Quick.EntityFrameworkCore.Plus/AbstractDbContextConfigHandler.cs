@@ -53,17 +53,16 @@ namespace Quick.EntityFrameworkCore.Plus
             if (columnChangedEntityTypeList.Count > 0)
             {
                 logger?.Invoke($"即将自动更新表结构。。。");
-                var columnChangedEntityTypes = columnChangedEntityTypeList.ToArray();
                 var dbContextBackup = new DbContextBackup.DbContextBackupContext();
                 using (var ms = new MemoryStream())
                 {
                     //备份
                     using (var dbContext = getDbContextFunc())
-                        dbContextBackup.Backup(dbContext, ms, columnChangedEntityTypes);
+                        dbContextBackup.Backup(dbContext, ms);
                     //还原
                     ms.Position = 0;
                     using (var dbContext = getDbContextFunc())
-                        dbContextBackup.Restore(dbContext, ms, columnChangedEntityTypes);
+                        dbContextBackup.Restore(dbContext, ms);
                 }
                 logger?.Invoke($"表结构更新完成。");
             }
