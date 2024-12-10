@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Quick.Fields;
 using System.Data;
 using System.Data.Common;
@@ -24,8 +25,7 @@ namespace Quick.EntityFrameworkCore.Plus
 
         public virtual void DatabaseEnsureCreatedAndUpdated(Func<DbContext> getDbContextFunc, Action<string> logger = null)
         {
-            var isSchemaChanged = false;
-
+            var columnChangedEntityTypeList = new List<IEntityType>();
             using (var dbContext = getDbContextFunc())
             {
                 //如果是表结构第一次创建，则创建成功后直接返回
@@ -45,25 +45,25 @@ namespace Quick.EntityFrameworkCore.Plus
                     if (tableDefColumnsString != tableCurrentColumnsString)
                     {
                         logger?.Invoke($"发现表[{tableName}]的结构不匹配，定义列：[{string.Join(",", tableDefColumns)}]，当前列：[{string.Join(",", tableCurrentColumns)}]。");
-                        isSchemaChanged = true;
-                        break;
+                        columnChangedEntityTypeList.Add(entityType);
                     }
                 }
             };
-            
-            if (isSchemaChanged)
+            //如果存在字段修改过的实体类型
+            if (columnChangedEntityTypeList.Count > 0)
             {
                 logger?.Invoke($"即将自动更新表结构。。。");
+                var columnChangedEntityTypes = columnChangedEntityTypeList.ToArray();
                 var dbContextBackup = new DbContextBackup.DbContextBackupContext();
                 using (var ms = new MemoryStream())
                 {
                     //备份
                     using (var dbContext = getDbContextFunc())
-                        dbContextBackup.Backup(dbContext, ms);
+                        dbContextBackup.Backup(dbContext, ms, columnChangedEntityTypes);
                     //还原
                     ms.Position = 0;
                     using (var dbContext = getDbContextFunc())
-                        dbContextBackup.Restore(dbContext, ms);
+                        dbContextBackup.Restore(dbContext, ms, columnChangedEntityTypes);
                 }
                 logger?.Invoke($"表结构更新完成。");
             }
