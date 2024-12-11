@@ -77,12 +77,11 @@ namespace Quick.EntityFrameworkCore.Plus
             if (model != null)
                 return;
 
-            var type = typeof(TTarget);
-            var metaAttr = type.GetCustomAttributes(typeof(ModelMetaAttribute), true)
-                .FirstOrDefault() as ModelMetaAttribute;
-            if (metaAttr == null)
+            var type = typeof(TTarget);            
+            var commentAttr = type.GetCustomAttribute<CommentAttribute>();
+            if (commentAttr == null)
                 throw new DependcyException($"未找到编号为[{id}]的实体。");
-            throw new DependcyException($"未找到编号为[{id}]的{metaAttr.DisplayName}。");
+            throw new DependcyException($"未找到编号为[{id}]的{commentAttr.Comment}。");
         }
 
         private void onDelete(TTarget target, bool recursive)
@@ -123,8 +122,8 @@ namespace Quick.EntityFrameworkCore.Plus
                   null)
         {
             var target2Type = typeof(TTarget2);
-            var attr = target2Type.GetCustomAttribute<ModelMetaAttribute>();
-            var target2ModelName = attr?.DisplayName;
+            var attr = target2Type.GetCustomAttribute<CommentAttribute>();
+            var target2ModelName = attr?.Comment;
             
             base.deleteCheckFaildAction = (source, target1) =>
                 throw new DependcyException($"{target1.ToString()}关联了{ConfigDbContext.CacheContext.Find<TTarget2>(getTarget2IdFunc(source)).ToString() ?? "未知" + target2ModelName}");
