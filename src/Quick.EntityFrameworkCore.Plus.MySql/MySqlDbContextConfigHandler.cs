@@ -14,15 +14,20 @@ namespace Quick.EntityFrameworkCore.Plus.MySql
         public string Database { get; set; }
         public string User { get; set; }
         public string Password { get; set; }
+        public MySqlSslMode SslMode { get; set; } = MySqlSslMode.Preferred;
+        public uint DefaultCommandTimeout { get; set; } = 3600;
+        public string TlsVersion { get; set; }
 
-        public override FieldForGet[] GetFields() => new FieldForGet[]
-        {
+        public override FieldForGet[] GetFields() => [
             new FieldForGet(){ Id=nameof(Host), Name="主机", Input_AllowBlank=false, Type = FieldType.InputText, Value=Host },
             new FieldForGet(){ Id=nameof(Port), Name="端口", Input_AllowBlank=false, Type = FieldType.InputNumber, Value=Port.ToString() },
             new FieldForGet(){ Id=nameof(Database), Name="数据库", Input_AllowBlank=false, Type = FieldType.InputText, Value=Database },
             new FieldForGet(){ Id=nameof(User), Name="用户名", Input_AllowBlank=false, Type = FieldType.InputText, Value=User },
-            new FieldForGet(){ Id=nameof(Password), Name="密码", Input_AllowBlank=false, Type = FieldType.InputPassword, Value=Password }
-        };
+            new FieldForGet(){ Id=nameof(Password), Name="密码", Input_AllowBlank=false, Type = FieldType.InputPassword, Value=Password },
+            new FieldForGet(){ Id=nameof(DefaultCommandTimeout), Name="默认命令超时",Description="单位：秒", Input_AllowBlank=false, Type = FieldType.InputNumber, Value=DefaultCommandTimeout.ToString() },
+            new FieldForGet(){ Id=nameof(SslMode), Name="SSL模式", Input_AllowBlank=false, Type = FieldType.InputSelect, Value=SslMode.ToString(), InputSelect_OptionsEnum = typeof(MySqlSslMode) },
+            new FieldForGet(){ Id=nameof(TlsVersion), Name="TLS版本",Description="为空时使用操作系统默认版本", Input_AllowBlank=true, Type = FieldType.InputText, Value=TlsVersion }
+        ];
 
         public override void Test()
         {
@@ -32,7 +37,9 @@ namespace Quick.EntityFrameworkCore.Plus.MySql
                 Port = Port,
                 User = User,
                 Password = Password,
-                Database = "mysql"
+                Database = "mysql",
+                SslMode = SslMode,
+                DefaultCommandTimeout = DefaultCommandTimeout
             };
             using (var dbContext = new TestDbContext(configHandler))
                 dbContext.Test();
@@ -47,14 +54,14 @@ namespace Quick.EntityFrameworkCore.Plus.MySql
                 Database = Database,
                 UserID = User,
                 Password = Password,
-                CharacterSet = DbConsts.MYSQL_DEFAULT_CHARSET
+                CharacterSet = DbConsts.MYSQL_DEFAULT_CHARSET,
+                SslMode = SslMode,
+                DefaultCommandTimeout = DefaultCommandTimeout,
+                TlsVersion = TlsVersion
             };
             var connectionString = connectionStringBuilder.ConnectionString;
             var serverVersion = ServerVersion.AutoDetect(connectionString);
-            optionsBuilder.UseMySql(connectionString, serverVersion, options =>
-            {
-                options.CommandTimeout(3600);
-            });
+            optionsBuilder.UseMySql(connectionString, serverVersion);
         }
 
         public override void Validate()
