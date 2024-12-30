@@ -13,10 +13,15 @@ namespace Quick.EntityFrameworkCore.Plus.SQLite
         public override string Name => "SQLite";
         public string FileName { get; set; }
 
-        public override FieldForGet[] GetFields() => new FieldForGet[]
+        public override FieldForGet[] GetFields() =>
+        [
+            new FieldForGet() { Id = nameof(FileName), Name = "数据库文件", Input_AllowBlank = false, Type = FieldType.InputText, Value = FileName }
+        ];
+        public override void SetFields(FieldForGet[] fields)
         {
-            new FieldForGet(){ Id=nameof(FileName), Name="数据库文件", Input_AllowBlank=false, Type = FieldType.InputText, Value=FileName }
-        };
+            var container = new FieldsForGetContainer() { Fields = fields };
+            FileName = container.GetFieldValue(nameof(FileName));
+        }
 
         public SQLiteDbContextConfigHandler() { }
         public SQLiteDbContextConfigHandler(string fileName)

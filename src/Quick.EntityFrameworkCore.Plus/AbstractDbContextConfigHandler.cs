@@ -74,12 +74,13 @@ namespace Quick.EntityFrameworkCore.Plus
                 dbContext.Database.EnsureDeleted();
         }
 
-        public virtual FieldForGet[] GetFields() => new FieldForGet[0];
-
         public virtual void OnConfiguring(DbContextOptionsBuilder optionsBuilder) { }
 
         public virtual void Test() { }
 
         public virtual void Validate() { }
+
+        public virtual FieldForGet[] GetFields() => [];
+        public virtual void SetFields(FieldForGet[] fields) { }
     }
 }

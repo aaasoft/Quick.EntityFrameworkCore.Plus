@@ -14,15 +14,25 @@ namespace Quick.EntityFrameworkCore.Plus.SqlServer
         public string Database { get; set; }
         public string User { get; set; }
         public string Password { get; set; }
-
-        public override FieldForGet[] GetFields() => new FieldForGet[]
-        {
+        public override FieldForGet[] GetFields() =>
+        [
             new FieldForGet(){ Id=nameof(Host), Name="主机", Input_AllowBlank=false, Type = FieldType.InputText, Value=Host },
             new FieldForGet(){ Id=nameof(Port), Name="端口", Input_AllowBlank=false, Type = FieldType.InputNumber, Value=Port.ToString() },
             new FieldForGet(){ Id=nameof(Database), Name="数据库", Input_AllowBlank=false, Type = FieldType.InputText, Value=Database },
             new FieldForGet(){ Id=nameof(User), Name="用户名", Input_AllowBlank=false, Type = FieldType.InputText, Value=User },
             new FieldForGet(){ Id=nameof(Password), Name="密码", Input_AllowBlank=false, Type = FieldType.InputPassword, Value=Password }
-        };
+        ];
+
+        public override void SetFields(FieldForGet[] fields)
+        {
+            var container = new FieldsForGetContainer() { Fields = fields };
+            Host = container.GetFieldValue(nameof(Host));
+            Port = int.Parse(container.GetFieldValue(nameof(Port)));
+            Database = container.GetFieldValue(nameof(Database));
+            User = container.GetFieldValue(nameof(User));
+            Password = container.GetFieldValue(nameof(Password));
+        }
+
         public override void Test()
         {
             var configHandler = new SqlServerDbContextConfigHandler()

@@ -12,6 +12,7 @@ namespace Quick.EntityFrameworkCore.Plus
         string Name { get; }
         void OnConfiguring(DbContextOptionsBuilder optionsBuilder);
         FieldForGet[] GetFields();
+        void SetFields(FieldForGet[] fields);
         /// <summary>
         /// 验证参数
         /// </summary>

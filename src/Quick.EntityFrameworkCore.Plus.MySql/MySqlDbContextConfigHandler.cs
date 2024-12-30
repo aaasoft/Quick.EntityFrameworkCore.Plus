@@ -18,16 +18,53 @@ namespace Quick.EntityFrameworkCore.Plus.MySql
         public uint DefaultCommandTimeout { get; set; } = 3600;
         public string TlsVersion { get; set; }
 
-        public override FieldForGet[] GetFields() => [
-            new FieldForGet(){ Id=nameof(Host), Name="主机", Input_AllowBlank=false, Type = FieldType.InputText, Value=Host },
-            new FieldForGet(){ Id=nameof(Port), Name="端口", Input_AllowBlank=false, Type = FieldType.InputNumber, Value=Port.ToString() },
-            new FieldForGet(){ Id=nameof(Database), Name="数据库", Input_AllowBlank=false, Type = FieldType.InputText, Value=Database },
-            new FieldForGet(){ Id=nameof(User), Name="用户名", Input_AllowBlank=false, Type = FieldType.InputText, Value=User },
-            new FieldForGet(){ Id=nameof(Password), Name="密码", Input_AllowBlank=false, Type = FieldType.InputPassword, Value=Password },
-            new FieldForGet(){ Id=nameof(DefaultCommandTimeout), Name="默认命令超时",Description="单位：秒", Input_AllowBlank=false, Type = FieldType.InputNumber, Value=DefaultCommandTimeout.ToString() },
-            new FieldForGet(){ Id=nameof(SslMode), Name="SSL模式", Input_AllowBlank=false, Type = FieldType.InputSelect, Value=SslMode.ToString(),InputSelect_OptionsEnumIdUseIntValue=false, InputSelect_OptionsEnum = typeof(MySqlSslMode) },
-            new FieldForGet(){ Id=nameof(TlsVersion), Name="TLS版本",Description="为空时使用操作系统默认版本", Input_AllowBlank=true, Type = FieldType.InputText, Value=TlsVersion }
+        public override FieldForGet[] GetFields() =>
+        [
+            new FieldForGet()
+            {
+                Id="Tab",
+                Type= FieldType.ContainerTab,
+                Children=[
+                    new FieldForGet()
+                    {
+                        Id="Common",
+                        Type = FieldType.ContainerGroup,
+                        Name="常规",
+                        Children=[
+                            new FieldForGet(){ Id=nameof(Host), Name="主机", Input_AllowBlank=false, Type = FieldType.InputText, Value=Host },
+                            new FieldForGet(){ Id=nameof(Port), Name="端口", Input_AllowBlank=false, Type = FieldType.InputNumber, Value=Port.ToString() },
+                            new FieldForGet(){ Id=nameof(Database), Name="数据库", Input_AllowBlank=false, Type = FieldType.InputText, Value=Database },
+                            new FieldForGet(){ Id=nameof(User), Name="用户名", Input_AllowBlank=false, Type = FieldType.InputText, Value=User },
+                            new FieldForGet(){ Id=nameof(Password), Name="密码", Input_AllowBlank=false, Type = FieldType.InputPassword, Value=Password }
+                        ]
+                    },
+                    new FieldForGet()
+                    {
+                        Id="Advance",
+                        Type = FieldType.ContainerGroup,
+                        Name="高级",
+                        Children=[
+                            new FieldForGet(){ Id=nameof(DefaultCommandTimeout), Name="默认命令超时",Description="单位：秒", Input_AllowBlank=false, Type = FieldType.InputNumber, Value=DefaultCommandTimeout.ToString() },
+                            new FieldForGet(){ Id=nameof(SslMode), Name="SSL模式", Input_AllowBlank=false, Type = FieldType.InputSelect, Value=SslMode.ToString(),InputSelect_OptionsEnumIdUseIntValue=false, InputSelect_OptionsEnum = typeof(MySqlSslMode) },
+                            new FieldForGet(){ Id=nameof(TlsVersion), Name="TLS版本",Description="为空时使用操作系统默认版本", Input_AllowBlank=true, Type = FieldType.InputText, Value=TlsVersion }
+                        ]
+                    }
+                ]
+            }
         ];
+
+        public override void SetFields(FieldForGet[] fields)
+        {
+            var container = new FieldsForGetContainer() { Fields = fields };
+            Host = container.GetFieldValue("Tab", "Common", nameof(Host));
+            Port = int.Parse(container.GetFieldValue("Tab", "Common", nameof(Port)));
+            Database = container.GetFieldValue("Tab", "Common", nameof(Database));
+            User = container.GetFieldValue("Tab", "Common", nameof(User));
+            Password = container.GetFieldValue("Tab", "Common", nameof(Password));
+            DefaultCommandTimeout = uint.Parse(container.GetFieldValue("Tab", "Advance", nameof(DefaultCommandTimeout)));
+            SslMode = Enum.Parse<MySqlSslMode>(container.GetFieldValue("Tab", "Advance", nameof(SslMode)));
+            TlsVersion = container.GetFieldValue("Tab", "Advance", nameof(TlsVersion));
+        }
 
         public override void Test()
         {

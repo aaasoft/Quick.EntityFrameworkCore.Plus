@@ -13,7 +13,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="DbContextBackup" Version="8.0.8" />
-		<PackageReference Include="Quick.Fields" Version="1.2.5" />
+		<PackageReference Include="Quick.Fields" Version="1.2.6" />
 	</ItemGroup>
 
 </Project>
