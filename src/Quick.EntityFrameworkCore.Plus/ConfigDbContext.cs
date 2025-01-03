@@ -17,7 +17,7 @@ namespace Quick.EntityFrameworkCore.Plus
         /// <summary>
         /// 配置处理器
         /// </summary>
-        public static IDbContextConfigHandler ConfigHandler { get; set; }
+        public static IDbContextConfigHandler ConfigHandler { get; set; } = new EmptyDbContextConfigHandler();
 
         public static void Init(IDbContextConfigHandler configHandler, Action<ModelBuilder> modelBuilderHandler)
         {
