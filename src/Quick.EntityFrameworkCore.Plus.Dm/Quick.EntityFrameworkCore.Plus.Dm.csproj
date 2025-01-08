@@ -4,14 +4,14 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<Version>8.0.11.8</Version>
+		<Version>8.0.11.11</Version>
 		<Authors>scbeta</Authors>
 		<PackageProjectUrl>https://github.com/aaasoft/Quick.EntityFrameworkCore.Plus</PackageProjectUrl>
 		<Description>Quick.EntityFrameworkCore.Plus的达梦数据库支持。</Description>
 		<RepositoryUrl>https://github.com/aaasoft/Quick.EntityFrameworkCore.Plus</RepositoryUrl>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="dmdbms.Microsoft.EntityFrameworkCore.Dm" Version="6.0.28.20604" />
+		<PackageReference Include="dmdbms.Microsoft.EntityFrameworkCore.Dm" Version="8.0.0.29681" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Quick.EntityFrameworkCore.Plus\Quick.EntityFrameworkCore.Plus.csproj" />
