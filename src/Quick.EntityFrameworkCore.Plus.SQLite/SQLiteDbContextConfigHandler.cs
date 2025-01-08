@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using Quick.Fields;
 using System.Data;
 using System.Data.Common;
@@ -7,11 +8,9 @@ namespace Quick.EntityFrameworkCore.Plus.SQLite
 {
     public class SQLiteDbContextConfigHandler : AbstractDbContextConfigHandler
     {
-        public const string CONFIG_DB_FILE = "Config.db";
-        public const string EVENT_DB_FILE = "Event.db";
-
         public override string Name => "SQLite";
-        public string FileName { get; set; }
+
+        public string DataSource { get; set; }
 
         public override FieldForGet[] GetFields() =>
         [
@@ -26,7 +25,7 @@ namespace Quick.EntityFrameworkCore.Plus.SQLite
                         Type = FieldType.ContainerGroup,
                         Name="常规",
                         Children=[
-                            new FieldForGet(){ Id=nameof(FileName), Name="数据库文件", Input_AllowBlank=false, Type = FieldType.InputText, Value=FileName }
+                            new FieldForGet(){ Id=nameof(DataSource), Name="数据源", Input_AllowBlank=false, Type = FieldType.InputText, Value=DataSource }
                         ]
                     },
                     new FieldForGet()
@@ -44,21 +43,21 @@ namespace Quick.EntityFrameworkCore.Plus.SQLite
         public override void SetFields(FieldForGet[] fields)
         {
             var container = new FieldsForGetContainer() { Fields = fields };
-            FileName = container.GetFieldValue("Tab", "Common", nameof(FileName));
+            DataSource = container.GetFieldValue("Tab", "Common", nameof(DataSource));
             base.SetFields(fields);
         }
 
         public SQLiteDbContextConfigHandler() { }
         public SQLiteDbContextConfigHandler(string fileName)
         {
-            FileName = fileName;
+            DataSource = fileName;
         }
 
         public override void Test()
         {
             var configHandler = new SQLiteDbContextConfigHandler()
             {
-                FileName = FileName,
+                DataSource = DataSource,
                 CommandTimeout = CommandTimeout
             };
             using (var dbContext = new TestDbContext(configHandler))
@@ -66,9 +65,12 @@ namespace Quick.EntityFrameworkCore.Plus.SQLite
         }
 
         public override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            var file = FileName;
-            optionsBuilder.UseSqlite($"Data Source={file}", options =>
+        {             
+            var connectionStringBuilder = new SqliteConnectionStringBuilder()
+            {
+                DataSource = DataSource
+            };
+            optionsBuilder.UseSqlite(connectionStringBuilder.ConnectionString, options =>
             {
                 options.CommandTimeout(CommandTimeout);
             });

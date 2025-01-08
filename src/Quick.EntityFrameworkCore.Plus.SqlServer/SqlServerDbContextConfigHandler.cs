@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Quick.Fields;
 using System.Data;
 using System.Data.Common;
@@ -75,7 +76,15 @@ namespace Quick.EntityFrameworkCore.Plus.SqlServer
 
         public override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer($"Data Source={Host},{Port};Initial Catalog={Database};User ID={User};Password={Password};TrustServerCertificate=True;",options=>
+            var connectionStringBuilder = new SqlConnectionStringBuilder()
+            {
+                DataSource = $"{Host},{Port}",
+                InitialCatalog = Database,
+                UserID = User,
+                Password = Password,
+                TrustServerCertificate = true
+            };
+            optionsBuilder.UseSqlServer(connectionStringBuilder.ConnectionString, options =>
             {
                 options.CommandTimeout(CommandTimeout);
             });
