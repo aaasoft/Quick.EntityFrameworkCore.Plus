@@ -28,20 +28,46 @@ namespace Quick.EntityFrameworkCore.Plus.Dm
 
         public override FieldForGet[] GetFields() =>
         [
-            new FieldForGet(){ Id=nameof(Host), Name="主机", Input_AllowBlank=false, Type = FieldType.InputText, Value=Host },
-            new FieldForGet(){ Id=nameof(Port), Name="端口", Input_AllowBlank=false, Type = FieldType.InputNumber, Value=Port.ToString() },
-            new FieldForGet(){ Id=nameof(Database), Name="数据库", Input_AllowBlank=false, Type = FieldType.InputText, Value=Database },
-            new FieldForGet(){ Id=nameof(User), Name="用户名", Input_AllowBlank=false, Type = FieldType.InputText, Value=User },
-            new FieldForGet(){ Id=nameof(Password), Name="密码", Input_AllowBlank=false, Type = FieldType.InputPassword, Value=Password }
+            new FieldForGet()
+            {
+                Id="Tab",
+                Type= FieldType.ContainerTab,
+                Children=[
+                    new FieldForGet()
+                    {
+                        Id="Common",
+                        Type = FieldType.ContainerGroup,
+                        Name="常规",
+                        Children=[
+                            new FieldForGet(){ Id=nameof(Host), Name="主机", Input_AllowBlank=false, Type = FieldType.InputText, Value=Host },
+                            new FieldForGet(){ Id=nameof(Port), Name="端口", Input_AllowBlank=false, Type = FieldType.InputNumber, Value=Port.ToString() },
+                            new FieldForGet(){ Id=nameof(Database), Name="数据库", Input_AllowBlank=false, Type = FieldType.InputText, Value=Database },
+                            new FieldForGet(){ Id=nameof(User), Name="用户名", Input_AllowBlank=false, Type = FieldType.InputText, Value=User },
+                            new FieldForGet(){ Id=nameof(Password), Name="密码", Input_AllowBlank=false, Type = FieldType.InputPassword, Value=Password }
+                        ]
+                    },
+                    new FieldForGet()
+                    {
+                        Id="Advance",
+                        Type = FieldType.ContainerGroup,
+                        Name="高级",
+                        Children=[
+                            new FieldForGet(){ Id=nameof(CommandTimeout), Name="命令超时",Description="单位：秒", Input_AllowBlank=false, Type = FieldType.InputNumber, Value=CommandTimeout.ToString() }
+                        ]
+                    }
+                ]
+            }
         ];
+
         public override void SetFields(FieldForGet[] fields)
         {
             var container = new FieldsForGetContainer() { Fields = fields };
-            Host = container.GetFieldValue(nameof(Host));
-            Port = int.Parse(container.GetFieldValue(nameof(Port)));
-            Database = container.GetFieldValue(nameof(Database));
-            User = container.GetFieldValue(nameof(User));
-            Password = container.GetFieldValue(nameof(Password));
+            Host = container.GetFieldValue("Tab", "Common", nameof(Host));
+            Port = int.Parse(container.GetFieldValue("Tab", "Common", nameof(Port)));
+            Database = container.GetFieldValue("Tab", "Common", nameof(Database));
+            User = container.GetFieldValue("Tab", "Common", nameof(User));
+            Password = container.GetFieldValue("Tab", "Common", nameof(Password));
+            base.SetFields(fields);
         }
 
         public override void Test()
@@ -52,7 +78,8 @@ namespace Quick.EntityFrameworkCore.Plus.Dm
                 Port = Port,
                 User = User,
                 Password = Password,
-                Database = "SYSDBA"
+                Database = "SYSDBA",
+                CommandTimeout = CommandTimeout
             };
             using (var dbContext = new TestDbContext(configHandler))
                 dbContext.Test();
@@ -68,10 +95,9 @@ namespace Quick.EntityFrameworkCore.Plus.Dm
                 User = User,
                 Password = Password
             };
-
             optionsBuilder.UseDm(connectionStringBuilder.ConnectionString, options =>
             {
-                options.CommandTimeout(3600);
+                options.CommandTimeout(CommandTimeout);
             });
         }
 

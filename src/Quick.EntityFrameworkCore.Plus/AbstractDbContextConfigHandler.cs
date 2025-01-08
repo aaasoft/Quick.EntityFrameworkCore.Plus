@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Quick.Fields;
+using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
 
@@ -9,6 +10,10 @@ namespace Quick.EntityFrameworkCore.Plus
     public abstract class AbstractDbContextConfigHandler : IDbContextConfigHandler
     {
         public abstract string Name { get; }
+        /// <summary>
+        /// 命令超时时间（单位：秒）
+        /// </summary>
+        public int CommandTimeout { get; set; } = 60;
 
         public virtual DbContext CreateDbContextInstance(Type dbContextType)
         {
@@ -81,6 +86,10 @@ namespace Quick.EntityFrameworkCore.Plus
         public virtual void Validate() { }
 
         public virtual FieldForGet[] GetFields() => [];
-        public virtual void SetFields(FieldForGet[] fields) { }
+        public virtual void SetFields(FieldForGet[] fields)
+        {
+            var container = new FieldsForGetContainer() { Fields = fields };
+            CommandTimeout = int.Parse(container.GetFieldValue("Tab", "Advance", nameof(CommandTimeout)));
+        }
     }
 }

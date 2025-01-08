@@ -14,9 +14,7 @@ namespace Quick.EntityFrameworkCore.Plus.MySql
         public string Database { get; set; }
         public string User { get; set; }
         public string Password { get; set; }
-        public MySqlSslMode SslMode { get; set; } = MySqlSslMode.Preferred;
-        public uint DefaultCommandTimeout { get; set; } = 3600;
-        public string TlsVersion { get; set; }
+        public MySqlSslMode SslMode { get; set; } = MySqlSslMode.None;
 
         public override FieldForGet[] GetFields() =>
         [
@@ -44,9 +42,20 @@ namespace Quick.EntityFrameworkCore.Plus.MySql
                         Type = FieldType.ContainerGroup,
                         Name="高级",
                         Children=[
-                            new FieldForGet(){ Id=nameof(DefaultCommandTimeout), Name="默认命令超时",Description="单位：秒", Input_AllowBlank=false, Type = FieldType.InputNumber, Value=DefaultCommandTimeout.ToString() },
-                            new FieldForGet(){ Id=nameof(SslMode), Name="SSL模式", Input_AllowBlank=false, Type = FieldType.InputSelect, Value=SslMode.ToString(),InputSelect_OptionsEnumIdUseIntValue=false, InputSelect_OptionsEnum = typeof(MySqlSslMode) },
-                            new FieldForGet(){ Id=nameof(TlsVersion), Name="TLS版本",Description="为空时使用操作系统默认版本", Input_AllowBlank=true, Type = FieldType.InputText, Value=TlsVersion }
+                            new FieldForGet(){ Id=nameof(CommandTimeout), Name="命令超时",Description="单位：秒", Input_AllowBlank=false, Type = FieldType.InputNumber, Value=CommandTimeout.ToString() },
+                            new FieldForGet()
+                            {
+                                Id=nameof(SslMode),
+                                Name="SSL模式", Input_AllowBlank=false, Type = FieldType.InputSelect, Value=SslMode.ToString(),
+                                InputSelect_Options = new Dictionary<string,string>()
+                                {
+                                    [nameof(MySqlSslMode.None)] = "不使用SSL",
+                                    [nameof(MySqlSslMode.Preferred)] = "首选，如果服务端支持则使用SSL",
+                                    [nameof(MySqlSslMode.Required)] = "必需，始终使用 SSL。如果服务端不支持SSL，则拒绝连接。",
+                                    [nameof(MySqlSslMode.VerifyCA)] = "CA验证，始终使用SSL，验证证书颁发机构，但允许名称不匹配。",
+                                    [nameof(MySqlSslMode.VerifyFull)] = "完整验证，始终使用SSL，如果主机名不正确，则验证失败",
+                                }
+                            }
                         ]
                     }
                 ]
@@ -61,9 +70,8 @@ namespace Quick.EntityFrameworkCore.Plus.MySql
             Database = container.GetFieldValue("Tab", "Common", nameof(Database));
             User = container.GetFieldValue("Tab", "Common", nameof(User));
             Password = container.GetFieldValue("Tab", "Common", nameof(Password));
-            DefaultCommandTimeout = uint.Parse(container.GetFieldValue("Tab", "Advance", nameof(DefaultCommandTimeout)));
             SslMode = Enum.Parse<MySqlSslMode>(container.GetFieldValue("Tab", "Advance", nameof(SslMode)));
-            TlsVersion = container.GetFieldValue("Tab", "Advance", nameof(TlsVersion));
+            base.SetFields(fields);
         }
 
         public override void Test()
@@ -75,9 +83,8 @@ namespace Quick.EntityFrameworkCore.Plus.MySql
                 User = User,
                 Password = Password,
                 Database = "mysql",
-                DefaultCommandTimeout = DefaultCommandTimeout,
-                SslMode = SslMode,
-                TlsVersion = TlsVersion
+                CommandTimeout = CommandTimeout,
+                SslMode = SslMode
             };
             using (var dbContext = new TestDbContext(configHandler))
                 dbContext.Test();
@@ -93,13 +100,14 @@ namespace Quick.EntityFrameworkCore.Plus.MySql
                 UserID = User,
                 Password = Password,
                 CharacterSet = DbConsts.MYSQL_DEFAULT_CHARSET,
-                DefaultCommandTimeout = DefaultCommandTimeout,
-                SslMode = SslMode,
-                TlsVersion = TlsVersion
+                SslMode = SslMode
             };
             var connectionString = connectionStringBuilder.ConnectionString;
             var serverVersion = ServerVersion.AutoDetect(connectionString);
-            optionsBuilder.UseMySql(connectionString, serverVersion);
+            optionsBuilder.UseMySql(connectionString, serverVersion, options =>
+            {
+                options.CommandTimeout(CommandTimeout);
+            });
         }
 
         public override void Validate()

@@ -15,12 +15,37 @@ namespace Quick.EntityFrameworkCore.Plus.SQLite
 
         public override FieldForGet[] GetFields() =>
         [
-            new FieldForGet() { Id = nameof(FileName), Name = "数据库文件", Input_AllowBlank = false, Type = FieldType.InputText, Value = FileName }
+            new FieldForGet()
+            {
+                Id="Tab",
+                Type= FieldType.ContainerTab,
+                Children=[
+                    new FieldForGet()
+                    {
+                        Id="Common",
+                        Type = FieldType.ContainerGroup,
+                        Name="常规",
+                        Children=[
+                            new FieldForGet(){ Id=nameof(FileName), Name="数据库文件", Input_AllowBlank=false, Type = FieldType.InputText, Value=FileName }
+                        ]
+                    },
+                    new FieldForGet()
+                    {
+                        Id="Advance",
+                        Type = FieldType.ContainerGroup,
+                        Name="高级",
+                        Children=[
+                            new FieldForGet(){ Id=nameof(CommandTimeout), Name="命令超时",Description="单位：秒", Input_AllowBlank=false, Type = FieldType.InputNumber, Value=CommandTimeout.ToString() }
+                        ]
+                    }
+                ]
+            }
         ];
         public override void SetFields(FieldForGet[] fields)
         {
             var container = new FieldsForGetContainer() { Fields = fields };
-            FileName = container.GetFieldValue(nameof(FileName));
+            FileName = container.GetFieldValue("Tab", "Common", nameof(FileName));
+            base.SetFields(fields);
         }
 
         public SQLiteDbContextConfigHandler() { }
@@ -33,7 +58,8 @@ namespace Quick.EntityFrameworkCore.Plus.SQLite
         {
             var configHandler = new SQLiteDbContextConfigHandler()
             {
-                FileName = FileName
+                FileName = FileName,
+                CommandTimeout = CommandTimeout
             };
             using (var dbContext = new TestDbContext(configHandler))
                 dbContext.Test();
@@ -42,7 +68,10 @@ namespace Quick.EntityFrameworkCore.Plus.SQLite
         public override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var file = FileName;
-            optionsBuilder.UseSqlite($"Data Source={file}");
+            optionsBuilder.UseSqlite($"Data Source={file}", options =>
+            {
+                options.CommandTimeout(CommandTimeout);
+            });
         }
 
         public override void Validate()
