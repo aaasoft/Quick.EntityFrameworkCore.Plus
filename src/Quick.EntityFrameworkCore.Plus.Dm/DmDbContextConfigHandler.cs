@@ -8,6 +8,7 @@ namespace Quick.EntityFrameworkCore.Plus.Dm
 {
     public class DmDbContextConfigHandler : AbstractDbContextConfigHandler
     {
+        private const string SYSTEM_SCHEMA = "SYSDBA";
         public override string Name => "达梦";
         public string Host { get; set; }
         public int Port { get; set; } = 5236;
@@ -78,7 +79,7 @@ namespace Quick.EntityFrameworkCore.Plus.Dm
                 Port = Port,
                 User = User,
                 Password = Password,
-                Database = "SYSDBA",
+                Database = SYSTEM_SCHEMA,
                 CommandTimeout = CommandTimeout
             };
             using (var dbContext = new TestDbContext(configHandler))
@@ -119,12 +120,15 @@ namespace Quick.EntityFrameworkCore.Plus.Dm
                 Host = Host,
                 Port = Port,
                 User = User,
-                Password = Password
+                Password = Password,
+                Database = SYSTEM_SCHEMA
             };
-
             //删除库
             using (var dbContext = new TestDbContext(configHandler))
-                dbContext.Database.ExecuteSql($"drop schema if exists \"{Database}\" cascade;");
+            {
+                var sql = $"drop schema if exists \"{Database}\" cascade;";
+                dbContext.Database.ExecuteSqlRaw(sql);
+            }                
         }
 
         public override void DatabaseEnsureCreated()
@@ -134,7 +138,8 @@ namespace Quick.EntityFrameworkCore.Plus.Dm
                 Host = Host,
                 Port = Port,
                 User = User,
-                Password = Password
+                Password = Password,
+                Database = SYSTEM_SCHEMA
             };
 
             //创建库
