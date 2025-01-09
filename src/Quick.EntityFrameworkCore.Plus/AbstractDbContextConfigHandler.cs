@@ -62,7 +62,7 @@ namespace Quick.EntityFrameworkCore.Plus
                 {
                     //备份
                     using (var dbContext = getDbContextFunc())
-                        dbContextBackup.Backup(dbContext, ms);
+                        dbContextBackup.Backup(dbContext, ms, TableNameProcess);
                     //删除表结构
                     DatabaseEnsureDeleted(getDbContextFunc);
                     //创建表结构
@@ -97,5 +97,6 @@ namespace Quick.EntityFrameworkCore.Plus
             var container = new FieldsForGetContainer() { Fields = fields };
             CommandTimeout = int.Parse(container.GetFieldValue("Tab", "Advance", nameof(CommandTimeout)));
         }
+        public virtual string TableNameProcess(string tableName) => tableName;
     }
 }

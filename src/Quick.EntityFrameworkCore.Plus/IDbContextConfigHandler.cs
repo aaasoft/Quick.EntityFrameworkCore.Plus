@@ -14,6 +14,12 @@ namespace Quick.EntityFrameworkCore.Plus
         FieldForGet[] GetFields();
         void SetFields(FieldForGet[] fields);
         /// <summary>
+        /// 表名处理
+        /// </summary>
+        /// <param name="arg"></param>
+        /// <returns></returns>
+        string TableNameProcess(string arg);
+        /// <summary>
         /// 验证参数
         /// </summary>
         void Validate();
