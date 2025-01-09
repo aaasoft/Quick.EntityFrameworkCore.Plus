@@ -63,10 +63,17 @@ namespace Quick.EntityFrameworkCore.Plus
                     //备份
                     using (var dbContext = getDbContextFunc())
                         dbContextBackup.Backup(dbContext, ms);
+                    //删除表结构
+                    DatabaseEnsureDeleted(getDbContextFunc);
+                    //创建表结构
+                    DatabaseEnsureCreated();
                     //还原
                     ms.Position = 0;
                     using (var dbContext = getDbContextFunc())
+                    {
+                        dbContext.Database.EnsureCreated();
                         dbContextBackup.Restore(dbContext, ms);
+                    }
                 }
                 logger?.Invoke($"表结构更新完成。");
             }

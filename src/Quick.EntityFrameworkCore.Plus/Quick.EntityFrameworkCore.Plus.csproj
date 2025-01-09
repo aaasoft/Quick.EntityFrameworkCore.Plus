@@ -4,7 +4,7 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<Version>8.0.11.15</Version>
+		<Version>8.0.11.17</Version>
 		<Authors>scbeta</Authors>
 		<PackageProjectUrl>https://github.com/aaasoft/Quick.EntityFrameworkCore.Plus</PackageProjectUrl>
 		<Description>为EntityFrameworkCore添加缓存与依赖管理支持</Description>
@@ -12,7 +12,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="DbContextBackup" Version="8.0.8" />
+		<PackageReference Include="DbContextBackup" Version="8.0.9" />
 		<PackageReference Include="Quick.Fields" Version="1.2.6" />
 	</ItemGroup>
 
