@@ -24,13 +24,8 @@ namespace Quick.EntityFrameworkCore.Plus
         /// <summary>
         /// 确保数据库删除
         /// </summary>
-        /// <param name="dbContextType">数据库上下文类型</param>
-        void DatabaseEnsureDeleted(Type dbContextType);
-        /// <summary>
-        /// 确保数据库创建
-        /// </summary>
-        /// <param name="dbContextType">数据库上下文类型</param>
-        void DatabaseEnsureCreated(Type dbContextType);
+        /// <param name="getDbContextFunc">获取数据库上下文方法</param>
+        void DatabaseEnsureDeleted(Func<DbContext> getDbContextFunc);
         /// <summary>
         /// 确保数据库
         /// </summary>

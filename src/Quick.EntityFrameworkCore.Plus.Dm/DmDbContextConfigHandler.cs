@@ -91,9 +91,10 @@ namespace Quick.EntityFrameworkCore.Plus.Dm
             {
                 Server = Host,
                 Port = Port,
-                Schema = Database,
                 User = User,
-                Password = Password
+                Password = Password,
+                Schema = Database,
+                CommandTimeout = CommandTimeout
             };
             optionsBuilder.UseDm(connectionStringBuilder.ConnectionString, options =>
             {
@@ -111,15 +112,14 @@ namespace Quick.EntityFrameworkCore.Plus.Dm
                 throw new ArgumentOutOfRangeException(nameof(Port), "端口的范围是1~65535");
         }
 
-        public override void DatabaseEnsureDeleted(Type dbContextType)
+        public override void DatabaseEnsureDeleted(Func<DbContext> getDbContextFunc)
         {
             var configHandler = new DmDbContextConfigHandler()
             {
                 Host = Host,
                 Port = Port,
                 User = User,
-                Password = Password,
-                Database = "SYSDBA"
+                Password = Password
             };
 
             //删除库
@@ -127,28 +127,21 @@ namespace Quick.EntityFrameworkCore.Plus.Dm
                 dbContext.Database.ExecuteSql($"drop schema if exists \"{Database}\" cascade;");
         }
 
-        public override void DatabaseEnsureCreated(Type dbContextType)
+        public override void DatabaseEnsureCreated()
         {
             var configHandler = new DmDbContextConfigHandler()
             {
                 Host = Host,
                 Port = Port,
                 User = User,
-                Password = Password,
-                Database = "SYSDBA"
+                Password = Password
             };
 
             //创建库
             using (var dbContext = new TestDbContext(configHandler))
             {
-                dbContext.Database.ExecuteSql($"create schema \"{Database}\";");
-                dbContext.SaveChanges();
-            }
-
-            //创建表结构
-            using (var dbContext = CreateDbContextInstance(dbContextType))
-            {
-                dbContext.Database.EnsureCreated();
+                var sql = $"create schema \"{Database}\";";
+                dbContext.Database.ExecuteSqlRaw(sql);
                 dbContext.SaveChanges();
             }
         }

@@ -20,16 +20,15 @@ namespace Quick.EntityFrameworkCore.Plus
             return (DbContext)Activator.CreateInstance(dbContextType, this);
         }
 
-        public virtual void DatabaseEnsureCreated(Type dbContextType)
-        {
-            using (var dbContext = CreateDbContextInstance(dbContextType))
-                dbContext.Database.EnsureCreated();
-        }
+        public virtual void DatabaseEnsureCreated() { }
 
         protected abstract string[] GetTableColumns(DbConnection dbConnection, string tableName);
 
         public virtual void DatabaseEnsureCreatedAndUpdated(Func<DbContext> getDbContextFunc, Action<string> logger = null)
         {
+            //确保数据库已创建
+            DatabaseEnsureCreated();
+
             var columnChangedEntityTypeList = new List<IEntityType>();
             using (var dbContext = getDbContextFunc())
             {
@@ -73,9 +72,9 @@ namespace Quick.EntityFrameworkCore.Plus
             }
         }
 
-        public virtual void DatabaseEnsureDeleted(Type dbContextType)
+        public virtual void DatabaseEnsureDeleted(Func<DbContext> getDbContextFunc)
         {
-            using (var dbContext = CreateDbContextInstance(dbContextType))
+            using (var dbContext = getDbContextFunc())
                 dbContext.Database.EnsureDeleted();
         }
 
