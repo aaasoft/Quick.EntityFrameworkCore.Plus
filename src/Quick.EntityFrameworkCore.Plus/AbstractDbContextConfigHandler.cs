@@ -58,24 +58,21 @@ namespace Quick.EntityFrameworkCore.Plus
             {
                 logger?.Invoke($"即将自动更新表结构。。。");
                 var dbContextBackup = new DbContextBackup.DbContextBackupContext();
-                using (var ms = new MemoryStream())
+                var backupFile = $"DbBackup_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.d3b";
+                //备份
+                using (var dbContext = getDbContextFunc())
+                    dbContextBackup.Backup(dbContext, backupFile, TableNameProcess);
+                //删除表结构
+                DatabaseEnsureDeleted(getDbContextFunc);
+                //创建表结构
+                DatabaseEnsureCreated();
+
+                using (var dbContext = getDbContextFunc())
                 {
-                    //备份
-                    using (var dbContext = getDbContextFunc())
-                        dbContextBackup.Backup(dbContext, ms, TableNameProcess);
-                    //删除表结构
-                    DatabaseEnsureDeleted(getDbContextFunc);
-                    //创建表结构
-                    DatabaseEnsureCreated();
-                    //还原
-                    ms.Position = 0;
-                    using (var dbContext = getDbContextFunc())
-                    {
-                        dbContext.Database.EnsureCreated();
-                        dbContextBackup.Restore(dbContext, ms);
-                    }
+                    dbContext.Database.EnsureCreated();
+                    dbContextBackup.Restore(dbContext, backupFile);
                 }
-                logger?.Invoke($"表结构更新完成。");
+                logger?.Invoke($"表结构更新完成。数据库备份文件：{backupFile}");
             }
         }
 
