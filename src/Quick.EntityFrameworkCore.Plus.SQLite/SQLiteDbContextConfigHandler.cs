@@ -11,6 +11,7 @@ namespace Quick.EntityFrameworkCore.Plus.SQLite
         public override string Name => "SQLite";
 
         public string DataSource { get; set; }
+        public string JournalMode { get; set; } = "DELETE";
 
         public override FieldForGet[] GetFields() =>
         [
@@ -34,23 +35,47 @@ namespace Quick.EntityFrameworkCore.Plus.SQLite
                         Type = FieldType.ContainerGroup,
                         Name="高级",
                         Children=[
-                            new FieldForGet(){ Id=nameof(CommandTimeout), Name="命令超时",Description="单位：秒", Input_AllowBlank=false, Type = FieldType.InputNumber, Value=CommandTimeout.ToString() }
+                            new FieldForGet(){ Id=nameof(CommandTimeout), Name="命令超时",Description="单位：秒", Input_AllowBlank=false, Type = FieldType.InputNumber, Value=CommandTimeout.ToString() },
+                            new FieldForGet()
+                            {
+                                Id=nameof(JournalMode),
+                                Name="日志模式", Input_AllowBlank=false, Type = FieldType.InputSelect, Value=JournalMode.ToString(),
+                                InputSelect_Options = new Dictionary<string,string>()
+                                {
+                                    ["DELETE"] = "DELETE",
+                                    ["TRUNCATE"] = "TRUNCATE",
+                                    ["WAL"] = "WAL"
+                                }
+                            }
                         ]
                     }
                 ]
             }
         ];
+
         public override void SetFields(FieldForGet[] fields)
         {
             var container = new FieldsForGetContainer() { Fields = fields };
             DataSource = container.GetFieldValue("Tab", "Common", nameof(DataSource));
+            JournalMode = container.GetFieldValue("Tab", "Advance", nameof(JournalMode));
             base.SetFields(fields);
         }
 
         public SQLiteDbContextConfigHandler() { }
-        public SQLiteDbContextConfigHandler(string fileName)
+        public SQLiteDbContextConfigHandler(string dataSource)
         {
-            DataSource = fileName;
+            DataSource = dataSource;
+        }
+
+        public override DbContext CreateDbContextInstance(Type dbContextType)
+        {
+            var dbContext = base.CreateDbContextInstance(dbContextType);
+            if (!string.IsNullOrEmpty(JournalMode))
+            {
+                var sql = $"PRAGMA journal_mode = {JournalMode}";
+                dbContext.Database.ExecuteSqlRaw(sql);
+            }
+            return dbContext;
         }
 
         public override void Test()
@@ -58,6 +83,7 @@ namespace Quick.EntityFrameworkCore.Plus.SQLite
             var configHandler = new SQLiteDbContextConfigHandler()
             {
                 DataSource = DataSource,
+                JournalMode = JournalMode,
                 CommandTimeout = CommandTimeout
             };
             using (var dbContext = new TestDbContext(configHandler))
@@ -81,6 +107,7 @@ namespace Quick.EntityFrameworkCore.Plus.SQLite
             var configHandler = new SQLiteDbContextConfigHandler()
             {
                 DataSource = DataSource,
+                JournalMode = JournalMode,
                 CommandTimeout = CommandTimeout
             };
             using (var dbContext = new TestDbContext(configHandler))
