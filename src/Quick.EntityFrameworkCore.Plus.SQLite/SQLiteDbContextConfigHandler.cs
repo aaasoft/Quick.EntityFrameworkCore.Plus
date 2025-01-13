@@ -66,7 +66,11 @@ namespace Quick.EntityFrameworkCore.Plus.SQLite
 
         public override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite($"Data Source={DataSource};Journal Mode=Off;", options =>
+            var connectionStringBuilder = new SqliteConnectionStringBuilder()
+            {
+                DataSource = DataSource
+            };
+            optionsBuilder.UseSqlite(connectionStringBuilder.ConnectionString, options =>
             {
                 options.CommandTimeout(CommandTimeout);
             });
@@ -74,6 +78,13 @@ namespace Quick.EntityFrameworkCore.Plus.SQLite
 
         public override void Validate()
         {
+            var configHandler = new SQLiteDbContextConfigHandler()
+            {
+                DataSource = DataSource,
+                CommandTimeout = CommandTimeout
+            };
+            using (var dbContext = new TestDbContext(configHandler))
+                dbContext.Test();
         }
 
         protected override string[] GetTableColumns(DbConnection dbConnection, string tableName)
