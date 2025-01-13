@@ -65,12 +65,8 @@ namespace Quick.EntityFrameworkCore.Plus.SQLite
         }
 
         public override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {             
-            var connectionStringBuilder = new SqliteConnectionStringBuilder()
-            {
-                DataSource = DataSource
-            };
-            optionsBuilder.UseSqlite(connectionStringBuilder.ConnectionString, options =>
+        {
+            optionsBuilder.UseSqlite($"Data Source={DataSource};Journal Mode=Off;", options =>
             {
                 options.CommandTimeout(CommandTimeout);
             });
