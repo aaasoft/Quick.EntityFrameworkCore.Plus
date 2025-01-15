@@ -61,12 +61,6 @@ namespace Quick.EntityFrameworkCore.Plus.SQLite
             base.SetFields(fields);
         }
 
-        public SQLiteDbContextConfigHandler() { }
-        public SQLiteDbContextConfigHandler(string dataSource)
-        {
-            DataSource = dataSource;
-        }
-
         public override DbContext CreateDbContextInstance(Type dbContextType)
         {
             var dbContext = base.CreateDbContextInstance(dbContextType);
