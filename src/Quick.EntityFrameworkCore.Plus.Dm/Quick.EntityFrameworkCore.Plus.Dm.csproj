@@ -11,7 +11,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="DM.Microsoft.EntityFrameworkCore" Version="8.0.0.28188" />
+	  <PackageReference Include="DM.Microsoft.EntityFrameworkCore" Version="8.0.0.33671" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Quick.EntityFrameworkCore.Plus\Quick.EntityFrameworkCore.Plus.csproj" />
