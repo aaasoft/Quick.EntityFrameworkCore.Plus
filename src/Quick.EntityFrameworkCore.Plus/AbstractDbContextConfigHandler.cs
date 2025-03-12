@@ -57,7 +57,7 @@ namespace Quick.EntityFrameworkCore.Plus
             if (columnChangedEntityTypeList.Count > 0)
             {
                 logger?.Invoke($"即将自动更新表结构。。。");
-                var dbContextBackup = new DbContextBackup.DbContextBackupContext();
+                var dbContextBackup = new DbContextBackup.D3b.D3bDbContextBackupContext();
                 var backupFile = $"DbBackup_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.d3b";
                 //备份
                 using (var dbContext = getDbContextFunc())
