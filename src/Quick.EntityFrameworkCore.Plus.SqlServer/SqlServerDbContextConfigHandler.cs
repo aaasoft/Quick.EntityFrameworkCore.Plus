@@ -59,20 +59,15 @@ namespace Quick.EntityFrameworkCore.Plus.SqlServer
             base.SetFields(fields);
         }
 
-        public override void Test()
+        protected override IDbContextConfigHandler GetTestDbContextConfigHandler() => new SqlServerDbContextConfigHandler()
         {
-            var configHandler = new SqlServerDbContextConfigHandler()
-            {
-                Host = Host,
-                Port = Port,
-                User = User,
-                Password = Password,
-                Database = Database,
-                CommandTimeout = CommandTimeout
-            };
-            using (var dbContext = new TestDbContext(configHandler))
-                dbContext.Test();
-        }
+            Host = Host,
+            Port = Port,
+            User = User,
+            Password = Password,
+            Database = Database,
+            CommandTimeout = CommandTimeout
+        };
 
         public override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

@@ -74,20 +74,15 @@ namespace Quick.EntityFrameworkCore.Plus.Dm
             base.SetFields(fields);
         }
 
-        public override void Test()
+        protected override IDbContextConfigHandler GetTestDbContextConfigHandler() => new DmDbContextConfigHandler()
         {
-            var configHandler = new DmDbContextConfigHandler()
-            {
-                Host = Host,
-                Port = Port,
-                User = User,
-                Password = Password,
-                Database = SYSTEM_SCHEMA,
-                CommandTimeout = CommandTimeout
-            };
-            using (var dbContext = new TestDbContext(configHandler))
-                dbContext.Test();
-        }
+            Host = Host,
+            Port = Port,
+            User = User,
+            Password = Password,
+            Database = SYSTEM_SCHEMA,
+            CommandTimeout = CommandTimeout
+        };
 
         public override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -118,35 +113,18 @@ namespace Quick.EntityFrameworkCore.Plus.Dm
 
         public override void DatabaseEnsureDeleted(Func<DbContext> getDbContextFunc)
         {
-            var configHandler = new DmDbContextConfigHandler()
-            {
-                Host = Host,
-                Port = Port,
-                User = User,
-                Password = Password,
-                Database = SYSTEM_SCHEMA
-            };
             //删除库
-            using (var dbContext = new TestDbContext(configHandler))
+            using (var dbContext = new TestDbContext(GetTestDbContextConfigHandler()))
             {
                 var sql = $"drop schema if exists \"{Database}\" cascade;";
                 dbContext.Database.ExecuteSqlRaw(sql);
-            }                
+            }
         }
 
         public override void DatabaseEnsureCreated()
         {
-            var configHandler = new DmDbContextConfigHandler()
-            {
-                Host = Host,
-                Port = Port,
-                User = User,
-                Password = Password,
-                Database = SYSTEM_SCHEMA
-            };
-
             //创建库
-            using (var dbContext = new TestDbContext(configHandler))
+            using (var dbContext = new TestDbContext(GetTestDbContextConfigHandler()))
             {
                 var sql = $"create schema \"{Database}\";";
                 dbContext.Database.ExecuteSqlRaw(sql);

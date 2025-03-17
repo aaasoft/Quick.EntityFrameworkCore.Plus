@@ -84,7 +84,13 @@ namespace Quick.EntityFrameworkCore.Plus
 
         public virtual void OnConfiguring(DbContextOptionsBuilder optionsBuilder) { }
 
-        public virtual void Test() { }
+        protected abstract IDbContextConfigHandler GetTestDbContextConfigHandler();
+
+        public virtual void Test()
+        {
+            using (var dbContext = new TestDbContext(GetTestDbContextConfigHandler()))
+                dbContext.Test();
+        }
 
         public virtual void Validate() { }
 

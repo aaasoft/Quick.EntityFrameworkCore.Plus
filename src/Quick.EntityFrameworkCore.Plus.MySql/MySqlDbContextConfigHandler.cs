@@ -74,21 +74,16 @@ namespace Quick.EntityFrameworkCore.Plus.MySql
             base.SetFields(fields);
         }
 
-        public override void Test()
+        protected override IDbContextConfigHandler GetTestDbContextConfigHandler() => new MySqlDbContextConfigHandler()
         {
-            var configHandler = new MySqlDbContextConfigHandler()
-            {
-                Host = Host,
-                Port = Port,
-                User = User,
-                Password = Password,
-                Database = "mysql",
-                CommandTimeout = CommandTimeout,
-                SslMode = SslMode
-            };
-            using (var dbContext = new TestDbContext(configHandler))
-                dbContext.Test();
-        }
+            Host = Host,
+            Port = Port,
+            User = User,
+            Password = Password,
+            Database = "mysql",
+            CommandTimeout = CommandTimeout,
+            SslMode = SslMode
+        };
 
         public override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

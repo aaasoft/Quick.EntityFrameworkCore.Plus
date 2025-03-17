@@ -72,17 +72,12 @@ namespace Quick.EntityFrameworkCore.Plus.SQLite
             return dbContext;
         }
 
-        public override void Test()
+        protected override IDbContextConfigHandler GetTestDbContextConfigHandler() => new SQLiteDbContextConfigHandler()
         {
-            var configHandler = new SQLiteDbContextConfigHandler()
-            {
-                DataSource = DataSource,
-                JournalMode = JournalMode,
-                CommandTimeout = CommandTimeout
-            };
-            using (var dbContext = new TestDbContext(configHandler))
-                dbContext.Test();
-        }
+            DataSource = DataSource,
+            JournalMode = JournalMode,
+            CommandTimeout = CommandTimeout
+        };
 
         public override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
