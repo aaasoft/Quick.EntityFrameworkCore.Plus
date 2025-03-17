@@ -13,30 +13,31 @@ namespace Quick.EntityFrameworkCore.Plus.SQLite
         public string DataSource { get; set; }
         public string JournalMode { get; set; } = "DELETE";
 
-        public override FieldForGet[] GetFields() =>
-        [
-            new FieldForGet()
+        public override FieldForGet[] QuickFields_Request(FieldsForPostContainer container = null)
+        {
+            if (container != null)
             {
-                Id="Tab",
-                Type= FieldType.ContainerTab,
-                Children=[
-                    new FieldForGet()
-                    {
-                        Id="Common",
-                        Type = FieldType.ContainerGroup,
-                        Name="常规",
-                        Children=[
-                            new FieldForGet(){ Id=nameof(DataSource), Name="数据源", Input_AllowBlank=false, Type = FieldType.InputText, Value=DataSource }
-                        ]
-                    },
-                    new FieldForGet()
-                    {
-                        Id="Advance",
-                        Type = FieldType.ContainerGroup,
-                        Name="高级",
-                        Children=[
-                            new FieldForGet(){ Id=nameof(CommandTimeout), Name="命令超时",Description="单位：秒", Input_AllowBlank=false, Type = FieldType.InputNumber, Value=CommandTimeout.ToString() },
-                            new FieldForGet()
+                DataSource = container.GetFieldValue(nameof(DataSource));
+                JournalMode = container.GetFieldValue(nameof(JournalMode));
+                OnQuickFields_Request(container);
+            }
+            return [
+                new ()
+                {
+                    Type= FieldType.ContainerTab,
+                    Children=
+                    [
+                        new ()
+                        {
+                            Type = FieldType.ContainerGroup,
+                            Name="常规",
+                            Children=[
+                                new FieldForGet(){ Id=nameof(DataSource), Name="数据源", Input_AllowBlank=false, Type = FieldType.InputText, Value=DataSource }
+                            ]
+                        },
+                        getAdvanceGroup(
+                        [
+                            new ()
                             {
                                 Id=nameof(JournalMode),
                                 Name="日志模式", Input_AllowBlank=false, Type = FieldType.InputSelect, Value=JournalMode.ToString(),
@@ -47,19 +48,12 @@ namespace Quick.EntityFrameworkCore.Plus.SQLite
                                     ["WAL"] = "WAL"
                                 }
                             }
-                        ]
-                    }
-                ]
-            }
-        ];
-
-        public override void SetFields(FieldForGet[] fields)
-        {
-            var container = new FieldsForGetContainer() { Fields = fields };
-            DataSource = container.GetFieldValue("Tab", "Common", nameof(DataSource));
-            JournalMode = container.GetFieldValue("Tab", "Advance", nameof(JournalMode));
-            base.SetFields(fields);
+                        ])
+                    ]
+                }
+            ];
         }
+
 
         public override DbContext CreateDbContextInstance(Type dbContextType)
         {

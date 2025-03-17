@@ -52,7 +52,8 @@ namespace Quick.EntityFrameworkCore.Plus
                         columnChangedEntityTypeList.Add(entityType);
                     }
                 }
-            };
+            }
+            ;
             //如果存在字段修改过的实体类型
             if (columnChangedEntityTypeList.Count > 0)
             {
@@ -94,12 +95,35 @@ namespace Quick.EntityFrameworkCore.Plus
 
         public virtual void Validate() { }
 
-        public virtual FieldForGet[] GetFields() => [];
-        public virtual void SetFields(FieldForGet[] fields)
-        {
-            var container = new FieldsForGetContainer() { Fields = fields };
-            CommandTimeout = int.Parse(container.GetFieldValue("Tab", "Advance", nameof(CommandTimeout)));
-        }
         public virtual string TableNameProcess(string tableName) => tableName;
+
+        protected FieldForGet getAdvanceGroup(params FieldForGet[] otherFields)
+        {
+            var list = new List<FieldForGet>();
+            if (otherFields != null) ;
+            list.AddRange(otherFields);
+            list.Add(new()
+            {
+                Id = nameof(CommandTimeout),
+                Name = "命令超时",
+                Description = "单位：秒",
+                Input_AllowBlank = false,
+                Type = FieldType.InputNumber,
+                Value = CommandTimeout.ToString()
+            });
+            return new()
+            {
+                Type = FieldType.ContainerGroup,
+                Name = "高级",
+                Children = list.ToArray()
+            };
+        }
+
+        protected void OnQuickFields_Request(FieldsForPostContainer postContainer)
+        {
+            CommandTimeout = int.Parse(postContainer.GetFieldValue(nameof(CommandTimeout)));
+        }
+
+        public abstract FieldForGet[] QuickFields_Request(FieldsForPostContainer container = null);
     }
 }

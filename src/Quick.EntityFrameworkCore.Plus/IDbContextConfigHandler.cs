@@ -7,8 +7,8 @@ namespace Quick.EntityFrameworkCore.Plus
     {
         string Name { get; }
         void OnConfiguring(DbContextOptionsBuilder optionsBuilder);
-        FieldForGet[] GetFields();
-        void SetFields(FieldForGet[] fields);
+        ///QuickFields的请求
+        FieldForGet[] QuickFields_Request(FieldsForPostContainer container = null);
         /// <summary>
         /// 表名处理
         /// </summary>
