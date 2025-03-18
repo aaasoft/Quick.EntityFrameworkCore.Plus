@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using NPOI.POIFS.Properties;
 using Quick.EntityFrameworkCore.Plus.Utils;
 using Quick.Fields;
 using System.Data;
 using System.Data.Common;
+using System.Text.Json;
 
 namespace Quick.EntityFrameworkCore.Plus
 {
@@ -17,6 +19,10 @@ namespace Quick.EntityFrameworkCore.Plus
         private const string BTN_RESTORE = nameof(BTN_RESTORE);
         private const string BTN_DELETE = nameof(BTN_DELETE);
 
+        private const string EXECUTE_INIT = nameof(EXECUTE_INIT);
+        private const string EXECUTE_RESTORE = nameof(EXECUTE_RESTORE);
+        private const string EXECUTE_DELETE = nameof(EXECUTE_DELETE);
+
         public abstract string Name { get; }
         /// <summary>
         /// 命令超时时间（单位：秒）
@@ -24,6 +30,7 @@ namespace Quick.EntityFrameworkCore.Plus
         public int CommandTimeout { get; set; } = 60;
         public static string BackupDir = "Backup";
         public static string BackupFilePrefix = "数据库备份";
+        private UnitStringConverting storageUSC = UnitStringConverting.StorageUnitStringConverting;
 
         public virtual DbContext CreateDbContextInstance(Type dbContextType)
         {
@@ -107,13 +114,13 @@ namespace Quick.EntityFrameworkCore.Plus
 
         public virtual string TableNameProcess(string tableName) => tableName;
 
-        protected FieldForGet getCommonGroup(FieldsForPostContainer container, bool isReadOnly, params FieldForGet[] otherFields)
+        protected FieldForGet getCommonGroup(FieldsForPostContainer request, bool isReadOnly, params FieldForGet[] otherFields)
         {
             var list = new List<FieldForGet>();
-            if (container != null)
+            if (request != null)
             {
                 //测试
-                if (container.IsFieldIdsMatch(BTN_TEST))
+                if (request.IsFieldIdsMatch(BTN_TEST))
                 {
                     try
                     {
@@ -135,56 +142,77 @@ namespace Quick.EntityFrameworkCore.Plus
                         });
                     }
                 }
-                //初始化
-                else if (container.IsFieldIdsMatch(BTN_INIT))
+                //按钮_初始化
+                else if (request.IsFieldIdsMatch(BTN_INIT))
                 {
-                    try
+                    list.Add(new()
                     {
-                        var DbContextType = typeof(ConfigDbContext);
-                        DatabaseEnsureDeleted(() => CreateDbContextInstance(DbContextType));
-                        DatabaseEnsureCreatedAndUpdated(() => CreateDbContextInstance(DbContextType));
+                        Type = FieldType.ContainerRow,
+                        Children = [
+                            new(){
+                            Id = EXECUTE_INIT,
+                            Name = "初始化",
+                            Description = $"初始化数据库会删除之前的表，再创建新的表结构，最后填充初始化数据，确认要继续?",
+                            Type = FieldType.MessageBox,
+                            PostOnChanged = true,
+                            MessageBox_CanCancel =true
+                        }]
+                    });
+                }
+                //执行_初始化
+                else if (request.IsFieldIdsMatch(EXECUTE_INIT))
+                {
+                    var messageBoxResult = request.GetFieldValue(request.FieldIds);
+                    if (messageBoxResult == FieldForGet.MESSAGEBOX_VALUE_OK)
+                    {
+                        try
+                        {
+                            var DbContextType = typeof(ConfigDbContext);
+                            DatabaseEnsureDeleted(() => CreateDbContextInstance(DbContextType));
+                            DatabaseEnsureCreatedAndUpdated(() => CreateDbContextInstance(DbContextType));
 
-                        using (var dbContext = CreateDbContextInstance(DbContextType))
-                        {
-                            var entityTypes = dbContext.Model.GetEntityTypes().ToArray();
-                            var i = 1;
-                            foreach (var entityType in entityTypes)
+                            using (var dbContext = CreateDbContextInstance(DbContextType))
                             {
-                                i++;
-                                var modelType = entityType.ClrType;
-                                if (typeof(IHasInitDataModel).IsAssignableFrom(modelType))
+                                var entityTypes = dbContext.Model.GetEntityTypes().ToArray();
+                                var i = 1;
+                                foreach (var entityType in entityTypes)
                                 {
-                                    var model = (IHasInitDataModel)Activator.CreateInstance(modelType);
-                                    var items = model.GetInitData();
-                                    dbContext.AddRange(items);
+                                    i++;
+                                    var modelType = entityType.ClrType;
+                                    if (typeof(IHasInitDataModel).IsAssignableFrom(modelType))
+                                    {
+                                        var model = (IHasInitDataModel)Activator.CreateInstance(modelType);
+                                        var items = model.GetInitData();
+                                        dbContext.AddRange(items);
+                                    }
                                 }
+                                //保存修改
+                                dbContext.SaveChanges();
                             }
-                            //保存修改
-                            dbContext.SaveChanges();
+                            list.Add(new FieldForGet()
+                            {
+                                Name = "成功",
+                                Description = "初始化成功！",
+                                Type = FieldType.MessageBox,
+                                MessageBox_CanCancel = false,
+                                PostOnChanged = true
+                            });
                         }
-                        list.Add(new FieldForGet()
+                        catch (Exception ex)
                         {
-                            Name = "成功",
-                            Description = "初始化成功！",
-                            Type = FieldType.MessageBox,
-                            MessageBox_CanCancel = false,
-                            PostOnChanged = true
-                        });
-                    }
-                    catch (Exception ex)
-                    {
-                        list.Add(new FieldForGet()
-                        {
-                            Name = "错误",
-                            Description = $"初始化时出错，原因：{ExceptionUtils.GetExceptionString(ex)}",
-                            Type = FieldType.MessageBox,
-                            MessageBox_CanCancel = false,
-                            PostOnChanged = true
-                        });
+                            list.Add(new FieldForGet()
+                            {
+                                Name = "错误",
+                                Description = $"初始化时出错，原因：{ExceptionUtils.GetExceptionString(ex)}",
+                                Type = FieldType.MessageBox,
+                                MessageBox_CanCancel = false,
+                                PostOnChanged = true
+                            });
+                        }
                     }
                 }
                 //备份为d3b文件
-                else if (container.IsFieldIdsMatch(BTN_BACKUP_D3B))
+                else if (request.IsFieldIdsMatch(BTN_BACKUP_D3B))
                 {
                     try
                     {
@@ -212,8 +240,8 @@ namespace Quick.EntityFrameworkCore.Plus
                         });
                     }
                 }
-                //备份为Excel文件
-                else if (container.IsFieldIdsMatch(BTN_BACKUP_XLSX))
+                //备份为xlsx文件
+                else if (request.IsFieldIdsMatch(BTN_BACKUP_XLSX))
                 {
                     try
                     {
@@ -313,74 +341,120 @@ namespace Quick.EntityFrameworkCore.Plus
             };
         }
 
-        protected bool GetIsReadOnly(FieldsForPostContainer container) => container != null && !string.IsNullOrEmpty(container.GetFieldValue(Quick_EntityFrameworkCore_Plus_AbstractDbContextConfigHandler_IsReadOnly));
+        protected bool GetIsReadOnly(FieldsForPostContainer request) => request != null && !string.IsNullOrEmpty(request.GetFieldValue(Quick_EntityFrameworkCore_Plus_AbstractDbContextConfigHandler_IsReadOnly));
 
-        protected FieldForGet getRestoreGroup(FieldsForPostContainer container, bool isReadOnly, params FieldForGet[] otherFields)
+        protected FieldForGet getRestoreGroup(FieldsForPostContainer request, bool isReadOnly, params FieldForGet[] otherFields)
         {
             var backupDi = new DirectoryInfo(BackupDir);
             if (!backupDi.Exists)
                 backupDi.Create();
 
             var list = new List<FieldForGet>();
-            if (container != null)
+            if (request != null)
             {
-                //还原
-                if (container.IsFieldIdsMatch("*", BTN_RESTORE))
+                //按钮_还原
+                if (request.IsFieldIdsMatch("*", BTN_RESTORE))
                 {
-                    var backupFile = container.FieldIds[0];
-                    try
+                    var file = request.FieldIds[0];
+                    list.Add(new()
                     {
-                        //先删除表结构，再创建
-                        DatabaseEnsureDeleted(() => new ConfigDbContext(this));
-                        DatabaseEnsureCreatedAndUpdated(() => new ConfigDbContext(this));
-                        DbContextBackup.DbContextBackupContext dbContextBackupContext = null;
-                        //开始还原
-                        var backupFileExtension = Path.GetExtension(backupFile).ToLower();
-                        switch (backupFileExtension)
+                        Id = file,
+                        Type = FieldType.ContainerRow,
+                        Children = [
+                            new(){
+                            Id = EXECUTE_RESTORE,
+                            Name = "还原",
+                            Description = $"确定要使用备份文件[{Path.GetFileName(file)}]进行还原?",
+                            Type = FieldType.MessageBox,
+                            PostOnChanged = true,
+                            MessageBox_CanCancel =true
+                        }]
+                    });
+                }
+                //执行_还原
+                else if (request.IsFieldIdsMatch("*", EXECUTE_RESTORE))
+                {
+                    var messageBoxResult = request.GetFieldValue(request.FieldIds);
+                    if (messageBoxResult == FieldForGet.MESSAGEBOX_VALUE_OK)
+                    {
+                        var backupFile = request.FieldIds[0];
+                        try
                         {
-                            case ".d3b":
-                                dbContextBackupContext = new DbContextBackup.D3b.D3bDbContextBackupContext();
-                                break;
-                            case ".xlsx":
-                                dbContextBackupContext = new DbContextBackup.Excel.XlsxDbContextBackupContext();
-                                break;
-                            default:
-                                throw new FormatException($"未知备份文件格式[{backupFileExtension}]");
+                            //先删除表结构，再创建
+                            DatabaseEnsureDeleted(() => new ConfigDbContext(this));
+                            DatabaseEnsureCreatedAndUpdated(() => new ConfigDbContext(this));
+                            DbContextBackup.DbContextBackupContext dbContextBackupContext = null;
+                            //开始还原
+                            var backupFileExtension = Path.GetExtension(backupFile).ToLower();
+                            switch (backupFileExtension)
+                            {
+                                case ".d3b":
+                                    dbContextBackupContext = new DbContextBackup.D3b.D3bDbContextBackupContext();
+                                    break;
+                                case ".xlsx":
+                                    dbContextBackupContext = new DbContextBackup.Excel.XlsxDbContextBackupContext();
+                                    break;
+                                default:
+                                    throw new FormatException($"未知备份文件格式[{backupFileExtension}]");
+                            }
+                            dbContextBackupContext.Restore(new ConfigDbContext(this), backupFile);
+                            list.Add(new FieldForGet()
+                            {
+                                Name = "成功",
+                                Description = $"还原完成",
+                                Type = FieldType.MessageBox
+                            });
                         }
-                        dbContextBackupContext.Restore(new ConfigDbContext(this), backupFile);
-                        list.Add(new FieldForGet()
+                        catch (Exception ex)
                         {
-                            Name = "成功",
-                            Description = $"还原完成",
-                            Type = FieldType.MessageBox
-                        });
-                    }
-                    catch (Exception ex)
-                    {
-                        list.Add(new FieldForGet()
-                        {
-                            Name = "错误",
-                            Description = $"还原时出错，原因：{ExceptionUtils.GetExceptionString(ex)}",
-                            Type = FieldType.MessageBox
-                        });
+                            list.Add(new FieldForGet()
+                            {
+                                Name = "错误",
+                                Description = $"还原时出错，原因：{ExceptionUtils.GetExceptionString(ex)}",
+                                Type = FieldType.MessageBox
+                            });
+                        }
                     }
                 }
-                //删除备份文件
-                else if (container.IsFieldIdsMatch("*", BTN_DELETE))
+                //按钮_删除
+                else if (request.IsFieldIdsMatch("*", BTN_DELETE))
                 {
-                    var backupFile = container.FieldIds[0];
-                    try
+                    var file = request.FieldIds[0];
+                    list.Add(new()
                     {
-                        File.Delete(backupFile);
-                    }
-                    catch (Exception ex)
+                        Id = file,
+                        Type = FieldType.ContainerRow,
+                        Children = [
+                            new(){
+                            Id = EXECUTE_DELETE,
+                            Name = "删除",
+                            Description = $"确定要删除备份文件[{Path.GetFileName(file)}]?",
+                            Type = FieldType.MessageBox,
+                            PostOnChanged = true,
+                            MessageBox_CanCancel =true
+                        }]
+                    });
+                }
+                //执行_删除
+                else if (request.IsFieldIdsMatch("*", EXECUTE_DELETE))
+                {
+                    var messageBoxResult = request.GetFieldValue(request.FieldIds);
+                    if (messageBoxResult == FieldForGet.MESSAGEBOX_VALUE_OK)
                     {
-                        list.Add(new FieldForGet()
+                        var backupFile = request.FieldIds[0];
+                        try
                         {
-                            Name = "错误",
-                            Description = $"删除时出错，原因：{ExceptionUtils.GetExceptionString(ex)}",
-                            Type = FieldType.MessageBox
-                        });
+                            File.Delete(backupFile);
+                        }
+                        catch (Exception ex)
+                        {
+                            list.Add(new FieldForGet()
+                            {
+                                Name = "错误",
+                                Description = $"删除时出错，原因：{ExceptionUtils.GetExceptionString(ex)}",
+                                Type = FieldType.MessageBox
+                            });
+                        }
                     }
                 }
             }
@@ -404,11 +478,18 @@ namespace Quick.EntityFrameworkCore.Plus
                     Children =
                     [
                         new (){Type = FieldType.ContainerTableTd,Value = backupFile.Name},
-                        new (){Type = FieldType.ContainerTableTd,Value = backupFile.Length.ToString()},
+                        new (){Type = FieldType.ContainerTableTd,Value = storageUSC.GetString(backupFile.Length,1,true)+"B"},
                         new ()
                         {
                             Type = FieldType.ContainerTableTd,
-                            Children =operateButtonList.ToArray()
+                            Children =
+                            [
+                                new ()
+                                {
+                                    Type = FieldType.ButtonGroup,
+                                    Children=operateButtonList.ToArray()
+                                }
+                            ]
                         }
                     ]
                 });
@@ -417,11 +498,14 @@ namespace Quick.EntityFrameworkCore.Plus
             list.Add(new()
             {
                 Type = FieldType.ContainerTable,
+                ContainerTable_Hoverable = true,
+                ContainerTable_Bordered = true,
                 Children =
                 [
                     new ()
                     {
                         Type = FieldType.ContainerTableHead,
+                        Theme = FieldTheme.Light,
                         Children =
                         [
                             new ()
@@ -452,12 +536,12 @@ namespace Quick.EntityFrameworkCore.Plus
             };
         }
 
-        protected void OnQuickFields_Request(FieldsForPostContainer container)
+        protected void OnQuickFields_Request(FieldsForPostContainer request)
         {
-            if (int.TryParse(container.GetFieldValue(nameof(CommandTimeout)), out var tmpCommandTimeout))
+            if (int.TryParse(request.GetFieldValue(nameof(CommandTimeout)), out var tmpCommandTimeout))
                 CommandTimeout = tmpCommandTimeout;
         }
 
-        public abstract FieldForGet[] QuickFields_Request(FieldsForPostContainer container = null);
+        public abstract FieldForGet[] QuickFields_Request(FieldsForPostContainer request = null);
     }
 }

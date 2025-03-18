@@ -39,7 +39,7 @@ namespace Quick.EntityFrameworkCore.Plus.SQLite
                     Children=
                     [
                         getCommonGroup(container,isReadOnly,
-                            new FieldForGet(){ Id=nameof(DataSource), Name="数据源", Input_AllowBlank=false, Type = FieldType.InputText, Value=DataSource }
+                            new FieldForGet(){ Id=nameof(DataSource), Name="数据源", Input_AllowBlank=false, Type = FieldType.InputText, Value=DataSource,Input_ReadOnly = isReadOnly }
                         ),
                         getAdvanceGroup(isReadOnly,
                             new FieldForGet()
@@ -54,7 +54,8 @@ namespace Quick.EntityFrameworkCore.Plus.SQLite
                                     ["DELETE"] = "DELETE",
                                     ["TRUNCATE"] = "TRUNCATE",
                                     ["WAL"] = "WAL"
-                                }
+                                },
+                                Input_ReadOnly = isReadOnly
                             }
                         ),
                         getRestoreGroup(container, isReadOnly)
