@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<Version>8.0.14.2</Version>
+		<Version>8.0.14.3</Version>
 		<Authors>scbeta</Authors>
 		<PackageProjectUrl>https://github.com/aaasoft/Quick.EntityFrameworkCore.Plus</PackageProjectUrl>
 		<Description>Quick.EntityFrameworkCore.Plus的SQLite数据库支持。</Description>
