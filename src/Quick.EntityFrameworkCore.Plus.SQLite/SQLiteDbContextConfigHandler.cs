@@ -32,36 +32,34 @@ namespace Quick.EntityFrameworkCore.Plus.SQLite
                     JournalMode = tmpJournalMode;
                 OnQuickFields_Request(request);
             }
-            return [
-                new ()
-                {
-                    Type= FieldType.ContainerTab,
-                    Children=
-                    [
-                        getCommonGroup(request,isReadOnly,
-                            new FieldForGet(){ Id=nameof(DataSource), Name="数据源", Input_AllowBlank=false, Type = FieldType.InputText, Value=DataSource,Input_ReadOnly = isReadOnly }
-                        ),
-                        getAdvanceGroup(isReadOnly,
-                            new FieldForGet()
-                            {
-                                Id=nameof(JournalMode),
-                                Name="日志模式",
-                                Input_AllowBlank=false,
-                                Type = FieldType.InputSelect,
-                                Value=JournalMode,
-                                InputSelect_Options = new Dictionary<string,string>()
-                                {
-                                    ["DELETE"] = "DELETE",
-                                    ["TRUNCATE"] = "TRUNCATE",
-                                    ["WAL"] = "WAL"
-                                },
-                                Input_ReadOnly = isReadOnly
-                            }
-                        ),
-                        getRestoreGroup(request, isReadOnly)
-                    ]
-                }
-            ];
+            var list = new List<FieldForGet>
+            {
+                getCommonGroup(request, isReadOnly,
+                    new FieldForGet(){ Id=nameof(DataSource), Name="数据源", Input_AllowBlank=false, Type = FieldType.InputText, Value=DataSource,Input_ReadOnly = isReadOnly }
+                ),
+                getAdvanceGroup(isReadOnly,
+                    new FieldForGet()
+                    {
+                        Id=nameof(JournalMode),
+                        Name="日志模式",
+                        Input_AllowBlank=false,
+                        Type = FieldType.InputSelect,
+                        Value=JournalMode,
+                        InputSelect_Options = new Dictionary<string,string>()
+                        {
+                            ["DELETE"] = "DELETE",
+                            ["TRUNCATE"] = "TRUNCATE",
+                            ["WAL"] = "WAL"
+                        },
+                        Input_ReadOnly = isReadOnly
+                    }
+                ),
+            };
+            if (EnableOperateButtons)
+            {
+                list.Add(getRestoreGroup(request, isReadOnly));
+            }
+            return [new() { Type = FieldType.ContainerTab, Children = list.ToArray() }];
         }
 
 

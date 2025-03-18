@@ -28,8 +28,19 @@ namespace Quick.EntityFrameworkCore.Plus
         /// 命令超时时间（单位：秒）
         /// </summary>
         public int CommandTimeout { get; set; } = 60;
-        public static string BackupDir = "Backup";
-        public static string BackupFilePrefix = "数据库备份";
+        /// <summary>
+        /// 备份目录
+        /// </summary>
+        public static string BackupDir { get; set; } = "Backup";
+        /// <summary>
+        /// 备份文件前缀
+        /// </summary>
+        public static string BackupFilePrefix { get; set; } = "数据库备份";
+        /// <summary>
+        /// 是否启用操作按钮
+        /// </summary>
+        public static bool EnableOperateButtons { get; set; } = true;
+
         private UnitStringConverting storageUSC = UnitStringConverting.StorageUnitStringConverting;
 
         public virtual DbContext CreateDbContextInstance(Type dbContextType)
@@ -275,41 +286,44 @@ namespace Quick.EntityFrameworkCore.Plus
             if (otherFields != null)
                 list.AddRange(otherFields);
 
-            list.Add(new FieldForGet()
-            {
-                Id = BTN_TEST,
-                Name = "测试",
-                Type = FieldType.Button,
-                MarginRight = 1,
-                MarginBottom = 1
-            });
-            if (!isReadOnly)
+            if (EnableOperateButtons)
             {
                 list.Add(new FieldForGet()
                 {
-                    Id = BTN_INIT,
-                    Name = "初始化",
+                    Id = BTN_TEST,
+                    Name = "测试",
+                    Type = FieldType.Button,
+                    MarginRight = 1,
+                    MarginBottom = 1
+                });
+                if (!isReadOnly)
+                {
+                    list.Add(new FieldForGet()
+                    {
+                        Id = BTN_INIT,
+                        Name = "初始化",
+                        Type = FieldType.Button,
+                        MarginRight = 1,
+                        MarginBottom = 1
+                    });
+                }
+                list.Add(new FieldForGet()
+                {
+                    Id = BTN_BACKUP_D3B,
+                    Name = "备份[d3b]",
+                    Type = FieldType.Button,
+                    MarginRight = 1,
+                    MarginBottom = 1
+                });
+                list.Add(new FieldForGet()
+                {
+                    Id = BTN_BACKUP_XLSX,
+                    Name = "备份[xlsx]",
                     Type = FieldType.Button,
                     MarginRight = 1,
                     MarginBottom = 1
                 });
             }
-            list.Add(new FieldForGet()
-            {
-                Id = BTN_BACKUP_D3B,
-                Name = "备份[d3b]",
-                Type = FieldType.Button,
-                MarginRight = 1,
-                MarginBottom = 1
-            });
-            list.Add(new FieldForGet()
-            {
-                Id = BTN_BACKUP_XLSX,
-                Name = "备份[xlsx]",
-                Type = FieldType.Button,
-                MarginRight = 1,
-                MarginBottom = 1
-            });
             return new()
             {
                 Type = FieldType.ContainerGroup,

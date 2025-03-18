@@ -1,5 +1,6 @@
 ﻿using Dm;
 using Microsoft.EntityFrameworkCore;
+using NPOI.SS.Formula.Functions;
 using Quick.Fields;
 using System.Data;
 using System.Data.Common;
@@ -50,24 +51,22 @@ namespace Quick.EntityFrameworkCore.Plus.Dm
                 User = request.GetFieldValue(nameof(User));
                 Password = request.GetFieldValue(nameof(Password));
             }
-            return
-            [
-                new ()
-                {
-                    Type= FieldType.ContainerTab,
-                    Children=[
-                        getCommonGroup(request,isReadOnly,
-                            new (){ Id=nameof(Host), Name="主机", Input_AllowBlank=false, Type = FieldType.InputText, Value=Host,Input_ReadOnly = isReadOnly },
-                            new (){ Id=nameof(Port), Name="端口", Input_AllowBlank=false, Type = FieldType.InputNumber, Value=Port.ToString(),Input_ReadOnly = isReadOnly },
-                            new (){ Id=nameof(Database), Name="数据库", Input_AllowBlank=false, Type = FieldType.InputText, Value=Database,Input_ReadOnly = isReadOnly },
-                            new (){ Id=nameof(User), Name="用户名", Input_AllowBlank=false, Type = FieldType.InputText, Value=User,Input_ReadOnly = isReadOnly },
-                            new (){ Id=nameof(Password), Name="密码", Input_AllowBlank=false, Type = FieldType.InputPassword, Value=Password,Input_ReadOnly = isReadOnly }
+            var list = new List<FieldForGet>
+            {
+                getCommonGroup(request, isReadOnly,
+                            new() { Id = nameof(Host), Name = "主机", Input_AllowBlank = false, Type = FieldType.InputText, Value = Host, Input_ReadOnly = isReadOnly },
+                            new() { Id = nameof(Port), Name = "端口", Input_AllowBlank = false, Type = FieldType.InputNumber, Value = Port.ToString(), Input_ReadOnly = isReadOnly },
+                            new() { Id = nameof(Database), Name = "数据库", Input_AllowBlank = false, Type = FieldType.InputText, Value = Database, Input_ReadOnly = isReadOnly },
+                            new() { Id = nameof(User), Name = "用户名", Input_AllowBlank = false, Type = FieldType.InputText, Value = User, Input_ReadOnly = isReadOnly },
+                            new() { Id = nameof(Password), Name = "密码", Input_AllowBlank = false, Type = FieldType.InputPassword, Value = Password, Input_ReadOnly = isReadOnly }
                         ),
-                        getAdvanceGroup(isReadOnly),
-                        getRestoreGroup(request, isReadOnly)
-                    ]
-                }
-            ];
+                getAdvanceGroup(isReadOnly),
+            };
+            if (EnableOperateButtons)
+            {
+                list.Add(getRestoreGroup(request, isReadOnly));
+            }
+            return [new() { Type = FieldType.ContainerTab, Children = list.ToArray() }];
         }
 
         protected override IDbContextConfigHandler GetTestDbContextConfigHandler() => new DmDbContextConfigHandler()
