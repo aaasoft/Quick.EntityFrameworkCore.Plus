@@ -3,9 +3,14 @@ using Microsoft.EntityFrameworkCore;
 using Quick.Fields;
 using System.Data;
 using System.Data.Common;
+using System.Text.Json.Serialization;
 
 namespace Quick.EntityFrameworkCore.Plus.SqlServer
 {
+    [JsonSerializable(typeof(SqlServerDbContextConfigHandler))]
+    [JsonSourceGenerationOptions(WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
+    public partial class SqlServerDbContextConfigHandlerSerializerContext : JsonSerializerContext { }
+
     public class SqlServerDbContextConfigHandler : AbstractDbContextConfigHandler
     {
         public override string Name => "Microsoft SQL Server";
@@ -18,10 +23,12 @@ namespace Quick.EntityFrameworkCore.Plus.SqlServer
 
         public override FieldForGet[] QuickFields_Request(FieldsForPostContainer container = null)
         {
+            var isReadOnly = GetIsReadOnly(container);
             if (container != null)
             {
                 Host = container.GetFieldValue(nameof(Host));
-                Port = int.Parse(container.GetFieldValue(nameof(Port)));
+                if (int.TryParse(container.GetFieldValue(nameof(Port)), out var tmpPort))
+                    Port = tmpPort;
                 Database = container.GetFieldValue(nameof(Database));
                 User = container.GetFieldValue(nameof(User));
                 Password = container.GetFieldValue(nameof(Password));
@@ -33,19 +40,15 @@ namespace Quick.EntityFrameworkCore.Plus.SqlServer
                 {
                     Type= FieldType.ContainerTab,
                     Children=[
-                        new ()
-                        {
-                            Type = FieldType.ContainerGroup,
-                            Name="常规",
-                            Children=[
-                                new (){ Id=nameof(Host), Name="主机", Input_AllowBlank=false, Type = FieldType.InputText, Value=Host },
-                                new (){ Id=nameof(Port), Name="端口", Input_AllowBlank=false, Type = FieldType.InputNumber, Value=Port.ToString() },
-                                new (){ Id=nameof(Database), Name="数据库", Input_AllowBlank=false, Type = FieldType.InputText, Value=Database },
-                                new (){ Id=nameof(User), Name="用户名", Input_AllowBlank=false, Type = FieldType.InputText, Value=User },
-                                new (){ Id=nameof(Password), Name="密码", Input_AllowBlank=false, Type = FieldType.InputPassword, Value=Password }
-                            ]
-                        },
-                        getAdvanceGroup()
+                        getCommonGroup(container,isReadOnly,
+                            new (){ Id=nameof(Host), Name="主机", Input_AllowBlank=false, Type = FieldType.InputText, Value=Host },
+                            new (){ Id=nameof(Port), Name="端口", Input_AllowBlank=false, Type = FieldType.InputNumber, Value=Port.ToString() },
+                            new (){ Id=nameof(Database), Name="数据库", Input_AllowBlank=false, Type = FieldType.InputText, Value=Database },
+                            new (){ Id=nameof(User), Name="用户名", Input_AllowBlank=false, Type = FieldType.InputText, Value=User },
+                            new (){ Id=nameof(Password), Name="密码", Input_AllowBlank=false, Type = FieldType.InputPassword, Value=Password }
+                        ),
+                        getAdvanceGroup(isReadOnly),
+                        getRestoreGroup(container, isReadOnly)
                     ]
                 }
             ];

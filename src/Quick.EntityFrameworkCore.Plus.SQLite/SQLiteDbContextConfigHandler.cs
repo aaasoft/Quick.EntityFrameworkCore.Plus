@@ -3,9 +3,15 @@ using Microsoft.EntityFrameworkCore;
 using Quick.Fields;
 using System.Data;
 using System.Data.Common;
+using System.Text.Json.Serialization;
 
 namespace Quick.EntityFrameworkCore.Plus.SQLite
 {
+
+    [JsonSerializable(typeof(SQLiteDbContextConfigHandler))]
+    [JsonSourceGenerationOptions(WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
+    public partial class SQLiteDbContextConfigHandlerSerializerContext : JsonSerializerContext { }
+
     public class SQLiteDbContextConfigHandler : AbstractDbContextConfigHandler
     {
         public override string Name => "SQLite";
@@ -15,10 +21,15 @@ namespace Quick.EntityFrameworkCore.Plus.SQLite
 
         public override FieldForGet[] QuickFields_Request(FieldsForPostContainer container = null)
         {
+            var isReadOnly = GetIsReadOnly(container);
             if (container != null)
             {
-                DataSource = container.GetFieldValue(nameof(DataSource));
-                JournalMode = container.GetFieldValue(nameof(JournalMode));
+                var tmpDataSource = container.GetFieldValue(nameof(DataSource));
+                if (!string.IsNullOrEmpty(tmpDataSource))
+                    DataSource = tmpDataSource;
+                var tmpJournalMode = container.GetFieldValue(nameof(JournalMode));
+                if (!string.IsNullOrEmpty(tmpJournalMode))
+                    JournalMode = tmpJournalMode;
                 OnQuickFields_Request(container);
             }
             return [
@@ -27,20 +38,17 @@ namespace Quick.EntityFrameworkCore.Plus.SQLite
                     Type= FieldType.ContainerTab,
                     Children=
                     [
-                        new ()
-                        {
-                            Type = FieldType.ContainerGroup,
-                            Name="常规",
-                            Children=[
-                                new FieldForGet(){ Id=nameof(DataSource), Name="数据源", Input_AllowBlank=false, Type = FieldType.InputText, Value=DataSource }
-                            ]
-                        },
-                        getAdvanceGroup(
-                        [
-                            new ()
+                        getCommonGroup(container,isReadOnly,
+                            new FieldForGet(){ Id=nameof(DataSource), Name="数据源", Input_AllowBlank=false, Type = FieldType.InputText, Value=DataSource }
+                        ),
+                        getAdvanceGroup(isReadOnly,
+                            new FieldForGet()
                             {
                                 Id=nameof(JournalMode),
-                                Name="日志模式", Input_AllowBlank=false, Type = FieldType.InputSelect, Value=JournalMode.ToString(),
+                                Name="日志模式",
+                                Input_AllowBlank=false,
+                                Type = FieldType.InputSelect,
+                                Value=JournalMode,
                                 InputSelect_Options = new Dictionary<string,string>()
                                 {
                                     ["DELETE"] = "DELETE",
@@ -48,7 +56,8 @@ namespace Quick.EntityFrameworkCore.Plus.SQLite
                                     ["WAL"] = "WAL"
                                 }
                             }
-                        ])
+                        ),
+                        getRestoreGroup(container, isReadOnly)
                     ]
                 }
             ];

@@ -3,9 +3,14 @@ using MySqlConnector;
 using Quick.Fields;
 using System.Data;
 using System.Data.Common;
+using System.Text.Json.Serialization;
 
 namespace Quick.EntityFrameworkCore.Plus.MySql
 {
+    [JsonSerializable(typeof(MySqlDbContextConfigHandler))]
+    [JsonSourceGenerationOptions(WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
+    public partial class MySqlDbContextConfigHandlerSerializerContext : JsonSerializerContext { }
+
     public class MySqlDbContextConfigHandler : AbstractDbContextConfigHandler
     {
         public override string Name => "MySQL";
@@ -18,14 +23,17 @@ namespace Quick.EntityFrameworkCore.Plus.MySql
 
         public override FieldForGet[] QuickFields_Request(FieldsForPostContainer container = null)
         {
+            var isReadOnly = GetIsReadOnly(container);
             if (container != null)
             {
                 Host = container.GetFieldValue(nameof(Host));
-                Port = int.Parse(container.GetFieldValue(nameof(Port)));
+                if (int.TryParse(container.GetFieldValue(nameof(Port)), out var tmpPort))
+                    Port = tmpPort;
                 Database = container.GetFieldValue(nameof(Database));
                 User = container.GetFieldValue(nameof(User));
                 Password = container.GetFieldValue(nameof(Password));
-                SslMode = Enum.Parse<MySqlSslMode>(container.GetFieldValue(nameof(SslMode)));
+                if (Enum.TryParse<MySqlSslMode>(container.GetFieldValue(nameof(SslMode)), out var tmpSslMode))
+                    SslMode = tmpSslMode;
                 OnQuickFields_Request(container);
             }
             return [
@@ -34,35 +42,29 @@ namespace Quick.EntityFrameworkCore.Plus.MySql
                     Type= FieldType.ContainerTab,
                     Children=
                     [
-                        new ()
-                        {
-                            Type = FieldType.ContainerGroup,
-                            Name="常规",
-                            Children=[
-                                new (){ Id=nameof(Host), Name="主机", Input_AllowBlank=false, Type = FieldType.InputText, Value=Host },
-                                new (){ Id=nameof(Port), Name="端口", Input_AllowBlank=false, Type = FieldType.InputNumber, Value=Port.ToString() },
-                                new (){ Id=nameof(Database), Name="数据库", Input_AllowBlank=false, Type = FieldType.InputText, Value=Database },
-                                new (){ Id=nameof(User), Name="用户名", Input_AllowBlank=false, Type = FieldType.InputText, Value=User },
-                                new (){ Id=nameof(Password), Name="密码", Input_AllowBlank=false, Type = FieldType.InputPassword, Value=Password }
-                            ]
-                        },
-                        getAdvanceGroup(
-                            [
-                                new ()
+                        getCommonGroup(container,isReadOnly,
+                            new (){ Id=nameof(Host), Name="主机", Input_AllowBlank=false, Type = FieldType.InputText, Value=Host },
+                            new (){ Id=nameof(Port), Name="端口", Input_AllowBlank=false, Type = FieldType.InputNumber, Value=Port.ToString() },
+                            new (){ Id=nameof(Database), Name="数据库", Input_AllowBlank=false, Type = FieldType.InputText, Value=Database },
+                            new (){ Id=nameof(User), Name="用户名", Input_AllowBlank=false, Type = FieldType.InputText, Value=User },
+                            new (){ Id=nameof(Password), Name="密码", Input_AllowBlank=false, Type = FieldType.InputPassword, Value=Password }
+                        ),
+                        getAdvanceGroup(isReadOnly,
+                            new FieldForGet()
+                            {
+                                Id=nameof(SslMode),
+                                Name="SSL模式", Input_AllowBlank=false, Type = FieldType.InputSelect, Value=SslMode.ToString(),
+                                InputSelect_Options = new Dictionary<string,string>()
                                 {
-                                    Id=nameof(SslMode),
-                                    Name="SSL模式", Input_AllowBlank=false, Type = FieldType.InputSelect, Value=SslMode.ToString(),
-                                    InputSelect_Options = new Dictionary<string,string>()
-                                    {
-                                        [nameof(MySqlSslMode.None)] = "不使用SSL",
-                                        [nameof(MySqlSslMode.Preferred)] = "首选，如果服务端支持则使用SSL",
-                                        [nameof(MySqlSslMode.Required)] = "必需，始终使用 SSL。如果服务端不支持SSL，则拒绝连接。",
-                                        [nameof(MySqlSslMode.VerifyCA)] = "CA验证，始终使用SSL，验证证书颁发机构，但允许名称不匹配。",
-                                        [nameof(MySqlSslMode.VerifyFull)] = "完整验证，始终使用SSL，如果主机名不正确，则验证失败",
-                                    }
+                                    [nameof(MySqlSslMode.None)] = "不使用SSL",
+                                    [nameof(MySqlSslMode.Preferred)] = "首选，如果服务端支持则使用SSL",
+                                    [nameof(MySqlSslMode.Required)] = "必需，始终使用 SSL。如果服务端不支持SSL，则拒绝连接。",
+                                    [nameof(MySqlSslMode.VerifyCA)] = "CA验证，始终使用SSL，验证证书颁发机构，但允许名称不匹配。",
+                                    [nameof(MySqlSslMode.VerifyFull)] = "完整验证，始终使用SSL，如果主机名不正确，则验证失败",
                                 }
-                            ]
-                        )
+                            }
+                        ),
+                        getRestoreGroup(container, isReadOnly)
                     ]
                 }
             ];

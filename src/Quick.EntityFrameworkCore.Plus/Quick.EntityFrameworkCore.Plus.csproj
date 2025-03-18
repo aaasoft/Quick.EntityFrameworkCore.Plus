@@ -11,8 +11,9 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="DbContextBackup" Version="8.0.14.3" />
 		<PackageReference Include="Quick.Fields" Version="1.3.3" />
+		<PackageReference Include="DbContextBackup" Version="8.0.14.4" />
+		<PackageReference Include="DbContextBackup.Excel" Version="8.0.14.4" />		
 	</ItemGroup>
 
 </Project>

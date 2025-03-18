@@ -12,18 +12,15 @@ namespace Quick.EntityFrameworkCore.Plus
     /// </summary>
     public partial class ConfigDbContext : DbContext
     {
-        private static Action<ModelBuilder> ModelBuilderHandler;
         public static DbCacheContext<ConfigDbContext> CacheContext { get; } = new DbCacheContext<ConfigDbContext>();
         /// <summary>
         /// 配置处理器
         /// </summary>
         public static IDbContextConfigHandler ConfigHandler { get; set; }
-
-        public static void Init(IDbContextConfigHandler configHandler, Action<ModelBuilder> modelBuilderHandler)
-        {
-            ConfigHandler = configHandler;
-            ModelBuilderHandler = modelBuilderHandler;
-        }
+        /// <summary>
+        /// 模型构建处理器
+        /// </summary>
+        public static Action<ModelBuilder> ModelBuilderHandler{get;set;}
 
         private IDbContextConfigHandler instanceConfigHandler = null;
         public ConfigDbContext() { }
