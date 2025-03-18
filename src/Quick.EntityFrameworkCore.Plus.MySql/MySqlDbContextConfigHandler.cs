@@ -21,20 +21,20 @@ namespace Quick.EntityFrameworkCore.Plus.MySql
         public string Password { get; set; }
         public MySqlSslMode SslMode { get; set; } = MySqlSslMode.None;
 
-        public override FieldForGet[] QuickFields_Request(FieldsForPostContainer container = null)
+        public override FieldForGet[] QuickFields_Request(FieldsForPostContainer request = null)
         {
-            var isReadOnly = GetIsReadOnly(container);
-            if (container != null)
+            var isReadOnly = IsReadOnly(request);
+            if (IsPost(request))
             {
-                Host = container.GetFieldValue(nameof(Host));
-                if (int.TryParse(container.GetFieldValue(nameof(Port)), out var tmpPort))
+                Host = request.GetFieldValue(nameof(Host));
+                if (int.TryParse(request.GetFieldValue(nameof(Port)), out var tmpPort))
                     Port = tmpPort;
-                Database = container.GetFieldValue(nameof(Database));
-                User = container.GetFieldValue(nameof(User));
-                Password = container.GetFieldValue(nameof(Password));
-                if (Enum.TryParse<MySqlSslMode>(container.GetFieldValue(nameof(SslMode)), out var tmpSslMode))
+                Database = request.GetFieldValue(nameof(Database));
+                User = request.GetFieldValue(nameof(User));
+                Password = request.GetFieldValue(nameof(Password));
+                if (Enum.TryParse<MySqlSslMode>(request.GetFieldValue(nameof(SslMode)), out var tmpSslMode))
                     SslMode = tmpSslMode;
-                OnQuickFields_Request(container);
+                OnQuickFields_Request(request);
             }
             return [
                 new ()
@@ -42,7 +42,7 @@ namespace Quick.EntityFrameworkCore.Plus.MySql
                     Type= FieldType.ContainerTab,
                     Children=
                     [
-                        getCommonGroup(container,isReadOnly,
+                        getCommonGroup(request,isReadOnly,
                             new (){ Id=nameof(Host), Name="主机", Input_AllowBlank=false, Type = FieldType.InputText, Value=Host,Input_ReadOnly = isReadOnly },
                             new (){ Id=nameof(Port), Name="端口", Input_AllowBlank=false, Type = FieldType.InputNumber, Value=Port.ToString(),Input_ReadOnly = isReadOnly },
                             new (){ Id=nameof(Database), Name="数据库", Input_AllowBlank=false, Type = FieldType.InputText, Value=Database,Input_ReadOnly = isReadOnly },
@@ -68,7 +68,7 @@ namespace Quick.EntityFrameworkCore.Plus.MySql
                                 Input_ReadOnly = isReadOnly
                             }
                         ),
-                        getRestoreGroup(container, isReadOnly)
+                        getRestoreGroup(request, isReadOnly)
                     ]
                 }
             ];

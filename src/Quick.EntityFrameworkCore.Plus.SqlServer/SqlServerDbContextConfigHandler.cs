@@ -21,18 +21,18 @@ namespace Quick.EntityFrameworkCore.Plus.SqlServer
         public string User { get; set; }
         public string Password { get; set; }
 
-        public override FieldForGet[] QuickFields_Request(FieldsForPostContainer container = null)
+        public override FieldForGet[] QuickFields_Request(FieldsForPostContainer request = null)
         {
-            var isReadOnly = GetIsReadOnly(container);
-            if (container != null)
+            var isReadOnly = IsReadOnly(request);
+            if (IsPost(request))
             {
-                Host = container.GetFieldValue(nameof(Host));
-                if (int.TryParse(container.GetFieldValue(nameof(Port)), out var tmpPort))
+                Host = request.GetFieldValue(nameof(Host));
+                if (int.TryParse(request.GetFieldValue(nameof(Port)), out var tmpPort))
                     Port = tmpPort;
-                Database = container.GetFieldValue(nameof(Database));
-                User = container.GetFieldValue(nameof(User));
-                Password = container.GetFieldValue(nameof(Password));
-                OnQuickFields_Request(container);
+                Database = request.GetFieldValue(nameof(Database));
+                User = request.GetFieldValue(nameof(User));
+                Password = request.GetFieldValue(nameof(Password));
+                OnQuickFields_Request(request);
             }
             return
             [
@@ -40,7 +40,7 @@ namespace Quick.EntityFrameworkCore.Plus.SqlServer
                 {
                     Type= FieldType.ContainerTab,
                     Children=[
-                        getCommonGroup(container,isReadOnly,
+                        getCommonGroup(request,isReadOnly,
                             new (){ Id=nameof(Host), Name="主机", Input_AllowBlank=false, Type = FieldType.InputText, Value=Host,Input_ReadOnly = isReadOnly },
                             new (){ Id=nameof(Port), Name="端口", Input_AllowBlank=false, Type = FieldType.InputNumber, Value=Port.ToString(),Input_ReadOnly = isReadOnly },
                             new (){ Id=nameof(Database), Name="数据库", Input_AllowBlank=false, Type = FieldType.InputText, Value=Database,Input_ReadOnly = isReadOnly },
@@ -48,7 +48,7 @@ namespace Quick.EntityFrameworkCore.Plus.SqlServer
                             new (){ Id=nameof(Password), Name="密码", Input_AllowBlank=false, Type = FieldType.InputPassword, Value=Password,Input_ReadOnly = isReadOnly }
                         ),
                         getAdvanceGroup(isReadOnly),
-                        getRestoreGroup(container, isReadOnly)
+                        getRestoreGroup(request, isReadOnly)
                     ]
                 }
             ];

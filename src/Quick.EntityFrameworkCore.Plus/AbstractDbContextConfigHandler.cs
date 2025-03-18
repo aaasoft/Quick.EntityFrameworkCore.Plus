@@ -341,7 +341,8 @@ namespace Quick.EntityFrameworkCore.Plus
             };
         }
 
-        protected bool GetIsReadOnly(FieldsForPostContainer request) => request != null && !string.IsNullOrEmpty(request.GetFieldValue(Quick_EntityFrameworkCore_Plus_AbstractDbContextConfigHandler_IsReadOnly));
+        protected bool IsReadOnly(FieldsForPostContainer request) => request != null && !string.IsNullOrEmpty(request.GetFieldValue(Quick_EntityFrameworkCore_Plus_AbstractDbContextConfigHandler_IsReadOnly));
+        protected bool IsPost(FieldsForPostContainer request) => request != null && request.GetField(nameof(BTN_TEST)) != null;
 
         protected FieldForGet getRestoreGroup(FieldsForPostContainer request, bool isReadOnly, params FieldForGet[] otherFields)
         {

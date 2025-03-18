@@ -19,18 +19,18 @@ namespace Quick.EntityFrameworkCore.Plus.SQLite
         public string DataSource { get; set; }
         public string JournalMode { get; set; } = "DELETE";
 
-        public override FieldForGet[] QuickFields_Request(FieldsForPostContainer container = null)
+        public override FieldForGet[] QuickFields_Request(FieldsForPostContainer request = null)
         {
-            var isReadOnly = GetIsReadOnly(container);
-            if (container != null)
+            var isReadOnly = IsReadOnly(request);
+            if (IsPost(request))
             {
-                var tmpDataSource = container.GetFieldValue(nameof(DataSource));
+                var tmpDataSource = request.GetFieldValue(nameof(DataSource));
                 if (!string.IsNullOrEmpty(tmpDataSource))
                     DataSource = tmpDataSource;
-                var tmpJournalMode = container.GetFieldValue(nameof(JournalMode));
+                var tmpJournalMode = request.GetFieldValue(nameof(JournalMode));
                 if (!string.IsNullOrEmpty(tmpJournalMode))
                     JournalMode = tmpJournalMode;
-                OnQuickFields_Request(container);
+                OnQuickFields_Request(request);
             }
             return [
                 new ()
@@ -38,7 +38,7 @@ namespace Quick.EntityFrameworkCore.Plus.SQLite
                     Type= FieldType.ContainerTab,
                     Children=
                     [
-                        getCommonGroup(container,isReadOnly,
+                        getCommonGroup(request,isReadOnly,
                             new FieldForGet(){ Id=nameof(DataSource), Name="数据源", Input_AllowBlank=false, Type = FieldType.InputText, Value=DataSource,Input_ReadOnly = isReadOnly }
                         ),
                         getAdvanceGroup(isReadOnly,
@@ -58,7 +58,7 @@ namespace Quick.EntityFrameworkCore.Plus.SQLite
                                 Input_ReadOnly = isReadOnly
                             }
                         ),
-                        getRestoreGroup(container, isReadOnly)
+                        getRestoreGroup(request, isReadOnly)
                     ]
                 }
             ];
