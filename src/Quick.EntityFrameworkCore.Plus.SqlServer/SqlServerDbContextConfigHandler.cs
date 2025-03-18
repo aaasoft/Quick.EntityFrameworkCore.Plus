@@ -13,6 +13,7 @@ namespace Quick.EntityFrameworkCore.Plus.SqlServer
 
     public class SqlServerDbContextConfigHandler : AbstractDbContextConfigHandler
     {
+        [JsonIgnore]
         public override string Name => "Microsoft SQL Server";
 
         public string Host { get; set; }

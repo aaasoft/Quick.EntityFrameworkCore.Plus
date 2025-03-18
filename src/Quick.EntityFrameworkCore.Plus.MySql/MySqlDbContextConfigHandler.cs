@@ -13,6 +13,7 @@ namespace Quick.EntityFrameworkCore.Plus.MySql
 
     public class MySqlDbContextConfigHandler : AbstractDbContextConfigHandler
     {
+        [JsonIgnore]
         public override string Name => "MySQL";
         public string Host { get; set; }
         public int Port { get; set; } = 3306;

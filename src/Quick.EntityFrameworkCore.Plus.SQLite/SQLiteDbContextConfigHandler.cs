@@ -14,6 +14,7 @@ namespace Quick.EntityFrameworkCore.Plus.SQLite
 
     public class SQLiteDbContextConfigHandler : AbstractDbContextConfigHandler
     {
+        [JsonIgnore]
         public override string Name => "SQLite";
 
         public string DataSource { get; set; }

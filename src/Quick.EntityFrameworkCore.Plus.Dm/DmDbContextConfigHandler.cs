@@ -15,6 +15,7 @@ namespace Quick.EntityFrameworkCore.Plus.Dm
     public class DmDbContextConfigHandler : AbstractDbContextConfigHandler
     {
         private const string SYSTEM_SCHEMA = "SYSDBA";
+        [JsonIgnore]
         public override string Name => "达梦";
         public string Host { get; set; }
         public int Port { get; set; } = 5236;
