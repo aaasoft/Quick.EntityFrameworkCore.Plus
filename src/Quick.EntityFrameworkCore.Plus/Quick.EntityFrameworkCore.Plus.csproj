@@ -8,7 +8,6 @@
 		<PackageProjectUrl>https://cnb.cool/scbeta/Quick.EntityFrameworkCore.Plus</PackageProjectUrl>
 		<Description>为EntityFrameworkCore添加缓存与依赖管理支持</Description>
 		<RepositoryUrl>https://cnb.cool/scbeta/Quick.EntityFrameworkCore.Plus</RepositoryUrl>
-		<IsAotCompatible>true</IsAotCompatible>
 	</PropertyGroup>
 
 	<ItemGroup>

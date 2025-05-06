@@ -1,9 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.EntityFrameworkCore;
 
 namespace Quick.EntityFrameworkCore.Plus
 {
@@ -23,7 +19,9 @@ namespace Quick.EntityFrameworkCore.Plus
         public static Action<ModelBuilder> ModelBuilderHandler{get;set;}
 
         private IDbContextConfigHandler instanceConfigHandler = null;
+
         public ConfigDbContext() { }
+
         public ConfigDbContext(IDbContextConfigHandler instanceConfigHandler)
         {
             this.instanceConfigHandler = instanceConfigHandler;

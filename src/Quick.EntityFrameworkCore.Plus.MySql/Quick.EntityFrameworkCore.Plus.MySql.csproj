@@ -8,7 +8,6 @@
 		<PackageProjectUrl>https://cnb.cool/scbeta/Quick.EntityFrameworkCore.Plus</PackageProjectUrl>
 		<Description>Quick.EntityFrameworkCore.Plus的MySQL数据库支持。</Description>
 		<RepositoryUrl>https://cnb.cool/scbeta/Quick.EntityFrameworkCore.Plus</RepositoryUrl>
-		<IsAotCompatible>true</IsAotCompatible>
 	</PropertyGroup>
 
 	<ItemGroup>
