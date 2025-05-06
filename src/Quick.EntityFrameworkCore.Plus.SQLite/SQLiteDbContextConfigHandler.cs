@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Quick.Fields;
 using System.Data;
 using System.Data.Common;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 namespace Quick.EntityFrameworkCore.Plus.SQLite
@@ -64,7 +65,7 @@ namespace Quick.EntityFrameworkCore.Plus.SQLite
         }
 
 
-        public override DbContext CreateDbContextInstance(Type dbContextType)
+        public override DbContext CreateDbContextInstance([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] Type dbContextType)
         {
             var dbContext = base.CreateDbContextInstance(dbContextType);
             if (!string.IsNullOrEmpty(JournalMode))

@@ -5,6 +5,7 @@ using Quick.EntityFrameworkCore.Plus.Utils;
 using Quick.Fields;
 using System.Data;
 using System.Data.Common;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 
 namespace Quick.EntityFrameworkCore.Plus
@@ -43,7 +44,7 @@ namespace Quick.EntityFrameworkCore.Plus
 
         private UnitStringConverting storageUSC = UnitStringConverting.StorageUnitStringConverting;
 
-        public virtual DbContext CreateDbContextInstance(Type dbContextType)
+        public virtual DbContext CreateDbContextInstance([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] Type dbContextType)
         {
             return (DbContext)Activator.CreateInstance(dbContextType, this);
         }

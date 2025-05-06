@@ -11,7 +11,6 @@ namespace Quick.EntityFrameworkCore.Plus
         /// 编号
         /// </summary>
         [Key]
-        [MaxLength(100)]
         public virtual string Id { get; set; }
 
         public override int GetHashCode()

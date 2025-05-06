@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.EntityFrameworkCore;
 using Quick.Fields;
 
 namespace Quick.EntityFrameworkCore.Plus
@@ -39,6 +40,6 @@ namespace Quick.EntityFrameworkCore.Plus
         /// </summary>
         /// <param name="dbContextType">数据库上下文类型</param>
         /// <returns></returns>
-        DbContext CreateDbContextInstance(Type dbContextType);
+        DbContext CreateDbContextInstance([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] Type dbContextType);
     }
 }

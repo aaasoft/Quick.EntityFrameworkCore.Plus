@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace Quick.EntityFrameworkCore.Plus
 {
@@ -17,7 +14,7 @@ namespace Quick.EntityFrameworkCore.Plus
         /// <param name="existModel">已经存在的模型</param>
         /// <param name="newModel">新模型</param>
         /// <returns>是否修改</returns>
-        public static bool Update<T>(T existModel, T newModel)
+        public static bool Update<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)]T>(T existModel, T newModel)
         {
             return Update(typeof(T), existModel, newModel);
         }
@@ -29,7 +26,7 @@ namespace Quick.EntityFrameworkCore.Plus
         /// <param name="existModel">已经存在的模型</param>
         /// <param name="newModel">新模型</param>
         /// <returns>是否修改</returns>
-        public static bool Update(Type type, object existModel, object newModel)
+        public static bool Update([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)]Type type, object existModel, object newModel)
         {
             bool hasModify = false;
             foreach (var pi in type.GetProperties())
