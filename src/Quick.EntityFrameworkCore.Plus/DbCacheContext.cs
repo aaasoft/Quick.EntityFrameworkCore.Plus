@@ -253,17 +253,23 @@ namespace Quick.EntityFrameworkCore.Plus
             if (onlyCacheTypeHashSet.Contains(type))
                 throw new ApplicationException($"仅缓存类型[{type.FullName}]数据不能添加。");
 
+            IDictionary dict = null;
+            //从缓存中检查模型是否存在，如果存在，则抛出异常
+            if (cacheDict.TryGetValue(type, out dict))
+            {
+                if (dict.Contains(model))
+                    throw new ApplicationException($"数据库中已经存在[{model}]");
+            }
             //先保存到数据库中
             UseDbContext(dbContext =>
             {
                 dbContext.Add(model);
                 dbContext.SaveChanges();
             });
-            
+
             if (donotCacheTypeHashSet.Contains(type))
                 return;
-            IDictionary dict = null;
-            if (!cacheDict.TryGetValue(type, out dict))
+            if (dict == null)
                 return;
             //再添加到缓存中
             lock (dict)
