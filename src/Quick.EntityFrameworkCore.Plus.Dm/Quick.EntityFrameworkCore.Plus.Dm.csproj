@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>net9.0</TargetFramework>
@@ -11,7 +11,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="DM.Microsoft.EntityFrameworkCore" Version="8.0.0.33671" />
+	  <PackageReference Include="DM.Microsoft.EntityFrameworkCore" Version="9.0.0.35540" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Quick.EntityFrameworkCore.Plus\Quick.EntityFrameworkCore.Plus.csproj" />
