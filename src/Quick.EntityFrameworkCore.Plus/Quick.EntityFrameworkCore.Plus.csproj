@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<TargetFramework>net9.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<Version>9.0.5.1</Version>
+		<Version>9.0.7</Version>
 		<Authors>scbeta</Authors>
 		<PackageProjectUrl>https://cnb.cool/scbeta/Quick.EntityFrameworkCore.Plus</PackageProjectUrl>
 		<Description>为EntityFrameworkCore添加缓存与依赖管理支持</Description>
