@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<TargetFramework>net9.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<Version>9.0.7.2</Version>
+		<Version>9.0.9</Version>
 		<Authors>scbeta</Authors>
 		<PackageProjectUrl>https://cnb.cool/scbeta/Quick.EntityFrameworkCore.Plus</PackageProjectUrl>
 		<Description>Quick.EntityFrameworkCore.Plus的达梦数据库支持。</Description>
