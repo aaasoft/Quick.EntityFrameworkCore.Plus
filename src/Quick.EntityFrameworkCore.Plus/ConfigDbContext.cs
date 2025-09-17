@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Quick.EntityFrameworkCore.Plus
 {
@@ -16,7 +15,11 @@ namespace Quick.EntityFrameworkCore.Plus
         /// <summary>
         /// 模型构建处理器
         /// </summary>
-        public static Action<ModelBuilder> ModelBuilderHandler{get;set;}
+        public static Action<ModelBuilder> ModelBuilderHandler { get; set; }
+        /// <summary>
+        /// 选项构建处理器
+        /// </summary>
+        public static Action<DbContextOptionsBuilder> OptionsBuilderHandler { get; set; }
 
         private IDbContextConfigHandler instanceConfigHandler = null;
 
@@ -43,12 +46,14 @@ namespace Quick.EntityFrameworkCore.Plus
         {
             var currentConfigHandler = GetCurrentConfigHandler();
             currentConfigHandler.OnConfiguring(optionsBuilder);
+            OptionsBuilderHandler?.Invoke(optionsBuilder);
+
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            ModelBuilderHandler(modelBuilder);
+            ModelBuilderHandler?.Invoke(modelBuilder);
         }
     }
 }
