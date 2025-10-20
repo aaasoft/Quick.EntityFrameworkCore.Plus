@@ -1,12 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using NPOI.POIFS.Properties;
 using Quick.EntityFrameworkCore.Plus.Utils;
 using Quick.Fields;
 using System.Data;
 using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
 
 namespace Quick.EntityFrameworkCore.Plus
 {
@@ -41,6 +39,10 @@ namespace Quick.EntityFrameworkCore.Plus
         /// 是否启用操作按钮
         /// </summary>
         public static bool EnableOperateButtons { get; set; } = true;
+        /// <summary>
+        /// 创建操作用数据库上下文
+        /// </summary>
+        public static Func<IDbContextConfigHandler, DbContext> CreateDbContextForOperateFunc { get; set; } = null;
 
         private UnitStringConverting storageUSC = UnitStringConverting.StorageUnitStringConverting;
 
@@ -52,6 +54,13 @@ namespace Quick.EntityFrameworkCore.Plus
         public virtual void DatabaseEnsureCreated() { }
 
         protected abstract string[] GetTableColumns(DbConnection dbConnection, string tableName);
+
+        private DbContext CreateDbContext()
+        {
+            if (CreateDbContextForOperateFunc == null)
+                return new ConfigDbContext(this);
+            return CreateDbContextForOperateFunc(this);
+        }
 
         public virtual void DatabaseEnsureCreatedAndUpdated(Func<DbContext> getDbContextFunc, Action<string> logger = null)
         {
@@ -179,11 +188,10 @@ namespace Quick.EntityFrameworkCore.Plus
                     {
                         try
                         {
-                            var DbContextType = typeof(ConfigDbContext);
-                            DatabaseEnsureDeleted(() => CreateDbContextInstance(DbContextType));
-                            DatabaseEnsureCreatedAndUpdated(() => CreateDbContextInstance(DbContextType));
+                            DatabaseEnsureDeleted(CreateDbContext);
+                            DatabaseEnsureCreatedAndUpdated(CreateDbContext);
 
-                            using (var dbContext = CreateDbContextInstance(DbContextType))
+                            using (var dbContext = CreateDbContext())
                             {
                                 var entityTypes = dbContext.Model.GetEntityTypes().ToArray();
                                 var i = 1;
@@ -230,7 +238,7 @@ namespace Quick.EntityFrameworkCore.Plus
                     {
                         var backupFile = $"{BackupFilePrefix}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.d3b";
                         var dbContextBackupContext = new DbContextBackup.D3b.D3bDbContextBackupContext();
-                        dbContextBackupContext.Backup(new ConfigDbContext(this), Path.Combine(BackupDir, backupFile), TableNameProcess);
+                        dbContextBackupContext.Backup(CreateDbContext(), Path.Combine(BackupDir, backupFile), TableNameProcess);
                         list.Add(new FieldForGet()
                         {
                             Name = "成功",
@@ -259,7 +267,7 @@ namespace Quick.EntityFrameworkCore.Plus
                     {
                         var backupFile = $"{BackupFilePrefix}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.xlsx";
                         var dbContextBackupContext = new DbContextBackup.Excel.XlsxDbContextBackupContext();
-                        dbContextBackupContext.Backup(new ConfigDbContext(this), Path.Combine(BackupDir, backupFile), TableNameProcess);
+                        dbContextBackupContext.Backup(CreateDbContext(), Path.Combine(BackupDir, backupFile), TableNameProcess);
                         list.Add(new FieldForGet()
                         {
                             Name = "成功",
@@ -397,8 +405,8 @@ namespace Quick.EntityFrameworkCore.Plus
                         try
                         {
                             //先删除表结构，再创建
-                            DatabaseEnsureDeleted(() => new ConfigDbContext(this));
-                            DatabaseEnsureCreatedAndUpdated(() => new ConfigDbContext(this));
+                            DatabaseEnsureDeleted(CreateDbContext);
+                            DatabaseEnsureCreatedAndUpdated(CreateDbContext);
                             DbContextBackup.DbContextBackupContext dbContextBackupContext = null;
                             //开始还原
                             var backupFileExtension = Path.GetExtension(backupFile).ToLower();
@@ -413,7 +421,7 @@ namespace Quick.EntityFrameworkCore.Plus
                                 default:
                                     throw new FormatException($"未知备份文件格式[{backupFileExtension}]");
                             }
-                            dbContextBackupContext.Restore(new ConfigDbContext(this), backupFile);
+                            dbContextBackupContext.Restore(CreateDbContext(), backupFile);
                             list.Add(new FieldForGet()
                             {
                                 Name = "成功",
