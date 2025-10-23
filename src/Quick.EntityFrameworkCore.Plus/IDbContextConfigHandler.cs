@@ -36,6 +36,12 @@ namespace Quick.EntityFrameworkCore.Plus
         /// <param name="logger"></param>
         void DatabaseEnsureCreatedAndUpdated(Func<DbContext> getDbContextFunc, Action<string> logger = null);
         /// <summary>
+        /// 向数据库填充初始化数据
+        /// </summary>
+        /// <param name="getDbContextFunc"></param>
+        /// <param name="logger"></param>
+        void DatabaseFillInitData(Func<DbContext> getDbContextFunc, Action<string> logger = null);
+        /// <summary>
         /// 创建
         /// </summary>
         /// <param name="dbContextType">数据库上下文类型</param>
