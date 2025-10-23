@@ -62,6 +62,32 @@ namespace Quick.EntityFrameworkCore.Plus
             return CreateDbContextForOperateFunc(this);
         }
 
+        public virtual void DatabaseFillInitData(Func<DbContext> getDbContextFunc, Action<string> logger = null)
+        {
+            using (var dbContext = CreateDbContext())
+            {
+                var entityTypes = dbContext.Model.GetEntityTypes().ToArray();
+                var i = 1;
+                foreach (var entityType in entityTypes)
+                {
+                    i++;
+                    var modelType = entityType.ClrType;
+                    if (typeof(IHasInitDataModel).IsAssignableFrom(modelType))
+                    {
+                        var tableName = entityType.GetTableName();
+                        var model = (IHasInitDataModel)Activator.CreateInstance(modelType);
+                        var items = model.GetInitData();
+                        if (items == null || items.Length == 0)
+                            continue;
+                        dbContext.AddRange(items);
+                        logger?.Invoke($"向表[{tableName}]添加[{items.Length}]条初始化数据。");
+                    }
+                }
+                //保存修改
+                dbContext.SaveChanges();
+            }
+        }
+
         public virtual void DatabaseEnsureCreatedAndUpdated(Func<DbContext> getDbContextFunc, Action<string> logger = null)
         {
             //确保数据库已创建
@@ -190,25 +216,8 @@ namespace Quick.EntityFrameworkCore.Plus
                         {
                             DatabaseEnsureDeleted(CreateDbContext);
                             DatabaseEnsureCreatedAndUpdated(CreateDbContext);
-
-                            using (var dbContext = CreateDbContext())
-                            {
-                                var entityTypes = dbContext.Model.GetEntityTypes().ToArray();
-                                var i = 1;
-                                foreach (var entityType in entityTypes)
-                                {
-                                    i++;
-                                    var modelType = entityType.ClrType;
-                                    if (typeof(IHasInitDataModel).IsAssignableFrom(modelType))
-                                    {
-                                        var model = (IHasInitDataModel)Activator.CreateInstance(modelType);
-                                        var items = model.GetInitData();
-                                        dbContext.AddRange(items);
-                                    }
-                                }
-                                //保存修改
-                                dbContext.SaveChanges();
-                            }
+                            DatabaseFillInitData(CreateDbContext);
+                            
                             list.Add(new FieldForGet()
                             {
                                 Name = "成功",
