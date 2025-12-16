@@ -539,7 +539,14 @@ namespace Quick.EntityFrameworkCore.Plus
                     ]
                 });
             }
-
+            list.Add(new()
+            {
+                Id = BTN_UPLOAD,
+                Type = FieldType.Upload,
+                Name = "上传",
+                Upload_FileFilter=".d3b,.xlsx",
+                Upload_Dir=BackupDir
+            });
             list.Add(new()
             {
                 Type = FieldType.ContainerTable,
@@ -547,14 +554,6 @@ namespace Quick.EntityFrameworkCore.Plus
                 ContainerTable_Bordered = true,
                 Children =
                 [
-                    new()
-                    {
-                        Id = BTN_UPLOAD,
-                        Type = FieldType.Upload,
-                        Name = "上传",
-                        Upload_FileFilter="*.d3b;*.xlsx",
-                        Upload_Dir=BackupDir
-                    },
                     new ()
                     {
                         Type = FieldType.ContainerTableHead,
