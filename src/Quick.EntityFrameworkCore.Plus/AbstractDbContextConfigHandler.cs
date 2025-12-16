@@ -388,11 +388,16 @@ namespace Quick.EntityFrameworkCore.Plus
             if (request != null)
             {
                 //按钮_上传
-                if (request.IsFieldIdsMatch("*", BTN_UPLOAD))
+                if (request.IsFieldIdsMatch(BTN_UPLOAD))
                 {
-                    var file = request.FieldIds[0];
-                    var field = request.GetField(file, BTN_UPLOAD);
-                    field.Value = null;                    
+                    var field = request.GetField(BTN_UPLOAD);
+                    var files = field.Value.Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var file in files)
+                    {
+                        var fs = new FileInfo(file);
+                        fs.MoveTo(Path.Combine(BackupDir, fs.Name));
+                    }
+                    field.Value = null;
                 }
                 //按钮_还原
                 else if (request.IsFieldIdsMatch("*", BTN_RESTORE))
@@ -548,9 +553,9 @@ namespace Quick.EntityFrameworkCore.Plus
                     {
                         Id = BTN_UPLOAD,
                         Type = FieldType.Upload,
+                        MarginBottom = 2,
                         Name = "上传",
-                        Upload_FileFilter=".d3b,.xlsx",
-                        Upload_Dir=BackupDir
+                        Upload_FileFilter=".d3b,.xlsx"
                     }
                 ]
             });
