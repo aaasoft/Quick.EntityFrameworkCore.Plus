@@ -15,6 +15,8 @@ namespace Quick.EntityFrameworkCore.Plus
         private const string BTN_INIT = nameof(BTN_INIT);
         private const string BTN_BACKUP_D3B = nameof(BTN_BACKUP_D3B);
         private const string BTN_BACKUP_XLSX = nameof(BTN_BACKUP_XLSX);
+        private const string BTN_UPLOAD = nameof(BTN_UPLOAD);
+        private const string BTN_DOWNLOAD = nameof(BTN_DOWNLOAD);
         private const string BTN_RESTORE = nameof(BTN_RESTORE);
         private const string BTN_DELETE = nameof(BTN_DELETE);
 
@@ -385,8 +387,15 @@ namespace Quick.EntityFrameworkCore.Plus
             var list = new List<FieldForGet>();
             if (request != null)
             {
+                //按钮_上传
+                if (request.IsFieldIdsMatch("*", BTN_UPLOAD))
+                {
+                    var file = request.FieldIds[0];
+                    var field = request.GetField(file, BTN_UPLOAD);
+                    field.Value = null;                    
+                }
                 //按钮_还原
-                if (request.IsFieldIdsMatch("*", BTN_RESTORE))
+                else if (request.IsFieldIdsMatch("*", BTN_RESTORE))
                 {
                     var file = request.FieldIds[0];
                     list.Add(new()
@@ -494,16 +503,19 @@ namespace Quick.EntityFrameworkCore.Plus
             if (otherFields != null)
                 list.AddRange(otherFields);
 
-            var operateButtonList = new List<FieldForGet>();
-            if (!isReadOnly)
-            {
-                operateButtonList.Add(new() { Id = BTN_RESTORE, Type = FieldType.Button, Name = "还原" });
-            }
-            operateButtonList.Add(new() { Id = BTN_DELETE, Type = FieldType.Button, Name = "删除", Theme = FieldTheme.Danger });
-
             var rowList = new List<FieldForGet>();
             foreach (var backupFile in backupDi.GetFiles("*.d3b").Concat(backupDi.GetFiles("*.xlsx")))
             {
+                var operateButtonList = new List<FieldForGet>
+                {
+                    new() { Id = BTN_DOWNLOAD, Type = FieldType.Download,Value = backupFile.FullName, Name = "下载" }
+                };
+                if (!isReadOnly)
+                {
+                    operateButtonList.Add(new() { Id = BTN_RESTORE, Type = FieldType.Button, Name = "还原" });
+                }
+                operateButtonList.Add(new() { Id = BTN_DELETE, Type = FieldType.Button, Name = "删除", Theme = FieldTheme.Danger });
+
                 rowList.Add(new()
                 {
                     Id = backupFile.FullName,
@@ -535,6 +547,14 @@ namespace Quick.EntityFrameworkCore.Plus
                 ContainerTable_Bordered = true,
                 Children =
                 [
+                    new()
+                    {
+                        Id = BTN_UPLOAD,
+                        Type = FieldType.Upload,
+                        Name = "上传",
+                        Upload_FileFilter="*.d3b;*.xlsx",
+                        Upload_Dir=BackupDir
+                    },
                     new ()
                     {
                         Type = FieldType.ContainerTableHead,
