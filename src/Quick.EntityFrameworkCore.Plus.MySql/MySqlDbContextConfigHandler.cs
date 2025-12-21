@@ -66,7 +66,7 @@ namespace Quick.EntityFrameworkCore.Plus.MySql
                     }
                 ),
             };
-            if (EnableOperateButtons)
+            if (EnableOperateButtons && EnableRestoreButtons)
             {
                 list.Add(getRestoreGroup(request, isReadOnly));
             }

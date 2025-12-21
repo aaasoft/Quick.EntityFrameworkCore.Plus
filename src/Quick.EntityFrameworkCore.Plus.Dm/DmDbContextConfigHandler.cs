@@ -63,7 +63,7 @@ namespace Quick.EntityFrameworkCore.Plus.Dm
                         ),
                 getAdvanceGroup(isReadOnly),
             };
-            if (EnableOperateButtons)
+            if (EnableOperateButtons && EnableRestoreButtons)
             {
                 list.Add(getRestoreGroup(request, isReadOnly));
             }

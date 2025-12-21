@@ -57,7 +57,7 @@ namespace Quick.EntityFrameworkCore.Plus.SQLite
                     }
                 ),
             };
-            if (EnableOperateButtons)
+            if (EnableOperateButtons && EnableRestoreButtons)
             {
                 list.Add(getRestoreGroup(request, isReadOnly));
             }

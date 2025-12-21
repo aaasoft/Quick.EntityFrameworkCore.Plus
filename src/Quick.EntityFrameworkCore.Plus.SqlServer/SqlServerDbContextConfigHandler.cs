@@ -46,7 +46,7 @@ namespace Quick.EntityFrameworkCore.Plus.SqlServer
                 ),
                 getAdvanceGroup(isReadOnly),
             };
-            if (EnableOperateButtons)
+            if (EnableOperateButtons && EnableRestoreButtons)
             {
                 list.Add(getRestoreGroup(request, isReadOnly));
             }

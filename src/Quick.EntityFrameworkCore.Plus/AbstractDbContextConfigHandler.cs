@@ -42,6 +42,23 @@ namespace Quick.EntityFrameworkCore.Plus
         /// </summary>
         public static bool EnableOperateButtons { get; set; } = true;
         /// <summary>
+        /// 是否启用测试按钮
+        /// </summary>
+        public static bool EnableTestButton { get; set; } = true;
+        /// <summary>
+        /// 是否启用初始化按钮
+        /// </summary>
+        public static bool EnableInitButton { get; set; } = true;
+        /// <summary>
+        /// 是否启用还原按钮
+        /// </summary>
+        public static bool EnableRestoreButtons { get; set; } = true;
+        /// <summary>
+        /// 是否启用备份按钮
+        /// </summary>
+        public static bool EnableBackupButtons { get; set; } = true;
+
+        /// <summary>
         /// 创建操作用数据库上下文
         /// </summary>
         public static Func<IDbContextConfigHandler, DbContext> CreateDbContextForOperateFunc { get; set; } = null;
@@ -308,15 +325,18 @@ namespace Quick.EntityFrameworkCore.Plus
 
             if (EnableOperateButtons)
             {
-                list.Add(new FieldForGet()
+                if (EnableTestButton)
                 {
-                    Id = BTN_TEST,
-                    Name = "测试",
-                    Type = FieldType.Button,
-                    MarginRight = 1,
-                    MarginBottom = 1
-                });
-                if (!isReadOnly)
+                    list.Add(new FieldForGet()
+                    {
+                        Id = BTN_TEST,
+                        Name = "测试",
+                        Type = FieldType.Button,
+                        MarginRight = 1,
+                        MarginBottom = 1
+                    });
+                }
+                if (!isReadOnly && EnableInitButton)
                 {
                     list.Add(new FieldForGet()
                     {
@@ -327,22 +347,25 @@ namespace Quick.EntityFrameworkCore.Plus
                         MarginBottom = 1
                     });
                 }
-                list.Add(new FieldForGet()
+                if (EnableBackupButtons)
                 {
-                    Id = BTN_BACKUP_D3B,
-                    Name = "备份[d3b]",
-                    Type = FieldType.Button,
-                    MarginRight = 1,
-                    MarginBottom = 1
-                });
-                list.Add(new FieldForGet()
-                {
-                    Id = BTN_BACKUP_XLSX,
-                    Name = "备份[xlsx]",
-                    Type = FieldType.Button,
-                    MarginRight = 1,
-                    MarginBottom = 1
-                });
+                    list.Add(new FieldForGet()
+                    {
+                        Id = BTN_BACKUP_D3B,
+                        Name = "备份[d3b]",
+                        Type = FieldType.Button,
+                        MarginRight = 1,
+                        MarginBottom = 1
+                    });
+                    list.Add(new FieldForGet()
+                    {
+                        Id = BTN_BACKUP_XLSX,
+                        Name = "备份[xlsx]",
+                        Type = FieldType.Button,
+                        MarginRight = 1,
+                        MarginBottom = 1
+                    });
+                }
             }
             return new()
             {
@@ -376,7 +399,7 @@ namespace Quick.EntityFrameworkCore.Plus
         }
 
         protected bool IsReadOnly(FieldsForPostContainer request) => request != null && !string.IsNullOrEmpty(request.GetFieldValue(Quick_EntityFrameworkCore_Plus_AbstractDbContextConfigHandler_IsReadOnly));
-        protected bool IsPost(FieldsForPostContainer request) => request != null && request.GetField(nameof(BTN_TEST)) != null;
+        protected bool IsPost(FieldsForPostContainer request) => request != null;
 
         protected FieldForGet getRestoreGroup(FieldsForPostContainer request, bool isReadOnly, params FieldForGet[] otherFields)
         {
