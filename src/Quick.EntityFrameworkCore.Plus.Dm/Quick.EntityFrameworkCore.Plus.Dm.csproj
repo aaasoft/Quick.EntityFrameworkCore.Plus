@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net9.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<Version>9.0.2025.4</Version>
+		<Version>8.0.2026.1</Version>
 		<Authors>scbeta</Authors>
 		<PackageProjectUrl>https://cnb.cool/scbeta/Quick.EntityFrameworkCore.Plus</PackageProjectUrl>
 		<Description>Quick.EntityFrameworkCore.Plus的达梦数据库支持。</Description>
@@ -11,7 +11,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="DM.Microsoft.EntityFrameworkCore" Version="9.0.0.37033" />
+	  <PackageReference Include="DM.Microsoft.EntityFrameworkCore" Version="8.0.0.37033" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Quick.EntityFrameworkCore.Plus\Quick.EntityFrameworkCore.Plus.csproj" />
