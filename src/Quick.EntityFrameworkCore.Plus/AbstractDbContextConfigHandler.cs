@@ -236,7 +236,7 @@ namespace Quick.EntityFrameworkCore.Plus
                             DatabaseEnsureDeleted(CreateDbContext);
                             DatabaseEnsureCreatedAndUpdated(CreateDbContext);
                             DatabaseFillInitData(CreateDbContext);
-                            
+
                             list.Add(new FieldForGet()
                             {
                                 Name = "成功",
@@ -399,7 +399,7 @@ namespace Quick.EntityFrameworkCore.Plus
         }
 
         protected bool IsReadOnly(FieldsForPostContainer request) => request != null && !string.IsNullOrEmpty(request.GetFieldValue(Quick_EntityFrameworkCore_Plus_AbstractDbContextConfigHandler_IsReadOnly));
-        protected bool IsPost(FieldsForPostContainer request) => request != null;
+        protected bool IsPost(FieldsForPostContainer request) => request != null && request.FieldIds != null;
 
         protected FieldForGet getRestoreGroup(FieldsForPostContainer request, bool isReadOnly, params FieldForGet[] otherFields)
         {
