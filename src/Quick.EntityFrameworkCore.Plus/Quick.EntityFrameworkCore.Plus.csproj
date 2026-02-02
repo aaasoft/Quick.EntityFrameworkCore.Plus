@@ -1,9 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
+		<TargetFrameworks>net6.0;net8.0</TargetFrameworks>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Version>2026.1.110</Version>
+   		<LangVersion>latest</LangVersion>
 		<Authors>scbeta</Authors>
 		<PackageProjectUrl>https://cnb.cool/scbeta/Quick.EntityFrameworkCore.Plus</PackageProjectUrl>
 		<Description>为EntityFrameworkCore添加缓存与依赖管理支持</Description>
@@ -11,9 +12,9 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Quick.Fields" Version="2025.8.1217" />
-		<PackageReference Include="DbContextBackup" Version="2026.1.110" />
-		<PackageReference Include="DbContextBackup.Excel" Version="2026.1.110" />
+		<PackageReference Include="Quick.Fields" Version="2026.1.202" />
+		<PackageReference Include="DbContextBackup" Version="2026.2.202" />
+		<PackageReference Include="DbContextBackup.Excel" Version="2026.2.202" />
 	</ItemGroup>
 
 </Project>

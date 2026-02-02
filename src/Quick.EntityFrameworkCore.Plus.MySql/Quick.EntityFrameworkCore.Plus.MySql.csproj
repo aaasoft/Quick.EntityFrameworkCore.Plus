@@ -1,16 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
+		<TargetFrameworks>net6.0;net8.0</TargetFrameworks>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Version>2026.1.110</Version>
 		<Authors>scbeta</Authors>
+		<LangVersion>latest</LangVersion>
 		<PackageProjectUrl>https://cnb.cool/scbeta/Quick.EntityFrameworkCore.Plus</PackageProjectUrl>
 		<Description>Quick.EntityFrameworkCore.Plus的MySQL数据库支持。</Description>
 		<RepositoryUrl>https://cnb.cool/scbeta/Quick.EntityFrameworkCore.Plus</RepositoryUrl>
 	</PropertyGroup>
-
-	<ItemGroup>
+	<ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' ">
+		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.3" />
+	</ItemGroup>
+	<ItemGroup Condition=" '$(TargetFramework)' == 'net8.0' ">
 	  <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.3" />
 	</ItemGroup>
 	<ItemGroup>

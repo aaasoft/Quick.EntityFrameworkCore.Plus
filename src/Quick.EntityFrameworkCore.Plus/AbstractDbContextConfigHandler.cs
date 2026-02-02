@@ -5,6 +5,7 @@ using Quick.Fields;
 using System.Data;
 using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 
 namespace Quick.EntityFrameworkCore.Plus
 {
@@ -25,6 +26,10 @@ namespace Quick.EntityFrameworkCore.Plus
         private const string EXECUTE_DELETE = nameof(EXECUTE_DELETE);
 
         public abstract string Name { get; }
+        /// <summary>
+        /// 获取模型类JSON序列化上下文
+        /// </summary>
+        public Func<Type, JsonSerializerContext> GetModelsJsonSerializerContextFunc { get; set; }
         /// <summary>
         /// 命令超时时间（单位：秒）
         /// </summary>
@@ -141,7 +146,7 @@ namespace Quick.EntityFrameworkCore.Plus
             if (columnChangedEntityTypeList.Count > 0)
             {
                 logger?.Invoke($"即将自动更新表结构。。。");
-                var dbContextBackup = new DbContextBackup.D3b.D3bDbContextBackupContext();
+                var dbContextBackup = new DbContextBackup.D3b.D3bDbContextBackupContext(GetModelsJsonSerializerContextFunc);
                 var backupFile = $"DbBackup_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.d3b";
                 //备份
                 using (var dbContext = getDbContextFunc())
@@ -265,7 +270,7 @@ namespace Quick.EntityFrameworkCore.Plus
                     try
                     {
                         var backupFile = $"{BackupFilePrefix}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.d3b";
-                        var dbContextBackupContext = new DbContextBackup.D3b.D3bDbContextBackupContext();
+                        var dbContextBackupContext = new DbContextBackup.D3b.D3bDbContextBackupContext(GetModelsJsonSerializerContextFunc);
                         dbContextBackupContext.Backup(CreateDbContext(), Path.Combine(BackupDir, backupFile), TableNameProcess);
                         list.Add(new FieldForGet()
                         {
@@ -294,7 +299,7 @@ namespace Quick.EntityFrameworkCore.Plus
                     try
                     {
                         var backupFile = $"{BackupFilePrefix}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.xlsx";
-                        var dbContextBackupContext = new DbContextBackup.Excel.XlsxDbContextBackupContext();
+                        var dbContextBackupContext = new DbContextBackup.Excel.XlsxDbContextBackupContext(GetModelsJsonSerializerContextFunc);
                         dbContextBackupContext.Backup(CreateDbContext(), Path.Combine(BackupDir, backupFile), TableNameProcess);
                         list.Add(new FieldForGet()
                         {
@@ -459,10 +464,10 @@ namespace Quick.EntityFrameworkCore.Plus
                             switch (backupFileExtension)
                             {
                                 case ".d3b":
-                                    dbContextBackupContext = new DbContextBackup.D3b.D3bDbContextBackupContext();
+                                    dbContextBackupContext = new DbContextBackup.D3b.D3bDbContextBackupContext(GetModelsJsonSerializerContextFunc);
                                     break;
                                 case ".xlsx":
-                                    dbContextBackupContext = new DbContextBackup.Excel.XlsxDbContextBackupContext();
+                                    dbContextBackupContext = new DbContextBackup.Excel.XlsxDbContextBackupContext(GetModelsJsonSerializerContextFunc);
                                     break;
                                 default:
                                     throw new FormatException($"未知备份文件格式[{backupFileExtension}]");
