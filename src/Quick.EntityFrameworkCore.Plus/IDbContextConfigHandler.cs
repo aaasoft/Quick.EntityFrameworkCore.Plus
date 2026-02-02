@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Quick.Fields;
 
@@ -6,6 +7,7 @@ namespace Quick.EntityFrameworkCore.Plus
 {
     public interface IDbContextConfigHandler
     {
+        public Func<Type, JsonSerializerContext> GetModelsJsonSerializerContextFunc { get; set; }
         string Name { get; }
         void OnConfiguring(DbContextOptionsBuilder optionsBuilder);
         ///QuickFields的请求
