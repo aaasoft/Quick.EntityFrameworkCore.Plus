@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Quick.EntityFrameworkCore.Plus.Utils;
 using Quick.Fields;
+using Quick.Utils;
 using System.Data;
 using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
