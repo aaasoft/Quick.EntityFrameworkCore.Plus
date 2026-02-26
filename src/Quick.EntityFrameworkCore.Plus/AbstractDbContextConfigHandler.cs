@@ -29,6 +29,7 @@ namespace Quick.EntityFrameworkCore.Plus
         /// <summary>
         /// 获取模型类JSON序列化上下文
         /// </summary>
+        [JsonIgnore]
         public Func<Type, JsonSerializerContext> GetModelsJsonSerializerContextFunc { get; set; }
         /// <summary>
         /// 命令超时时间（单位：秒）
