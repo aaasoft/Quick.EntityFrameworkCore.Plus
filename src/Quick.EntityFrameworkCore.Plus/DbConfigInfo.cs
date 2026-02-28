@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Quick.Fields;
 
@@ -21,6 +22,7 @@ namespace Quick.EntityFrameworkCore.Plus
         public FieldForGet GetDbConfigGroup(FieldsForPostContainer request, bool isReadOnly,
             string dbKey, string dbName,
             Func<IDbContextConfigHandler, DbContext> dbContextFactory,
+            Func<Type, JsonSerializerContext> getModelsJsonSerializerContextFunc,
             Func<IDbContextConfigHandler> getDbContextConfigHandler,
             Action<IDbContextConfigHandler> setDbContextConfigHandler
         )
@@ -59,7 +61,7 @@ namespace Quick.EntityFrameworkCore.Plus
                 if (otherChildren != null)
                     dbConfigRequestFieldList.AddRange(otherChildren);
 
-                dbConfigHandler = DbUtils.GetDbContextConfigHandler(DbType);
+                dbConfigHandler = DbUtils.GetDbContextConfigHandler(DbType, getModelsJsonSerializerContextFunc);
                 setDbContextConfigHandler(dbConfigHandler);
             }
             dbConfigRequest.Fields = dbConfigRequestFieldList.ToArray();
