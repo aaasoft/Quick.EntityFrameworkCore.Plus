@@ -1,6 +1,5 @@
 ﻿using Dm;
 using Microsoft.EntityFrameworkCore;
-using NPOI.SS.Formula.Functions;
 using Quick.Fields;
 using System.Data;
 using System.Data.Common;
@@ -14,9 +13,17 @@ namespace Quick.EntityFrameworkCore.Plus.Dm
 
     public class DmDbContextConfigHandler : AbstractDbContextConfigHandler
     {
-        private const string SYSTEM_SCHEMA = "SYSDBA";
+        public static DbContextConfigHandlerInfo Info { get; } = new DbContextConfigHandlerInfo()
+        {
+            Id = typeof(DmDbContextConfigHandler).FullName,
+            Name = "达梦",
+            Factory = () => new DmDbContextConfigHandler(),
+            TypeInfo = DmDbContextConfigHandlerSerializerContext.Default.DmDbContextConfigHandler
+        };
         [JsonIgnore]
-        public override string Name => "达梦";
+        public override string Name => Info.Name;
+
+        private const string SYSTEM_SCHEMA = "SYSDBA";        
         public string Host { get; set; }
         public int Port { get; set; } = 5236;
         private string _Database;

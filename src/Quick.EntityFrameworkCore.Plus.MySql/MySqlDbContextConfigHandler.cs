@@ -13,8 +13,16 @@ namespace Quick.EntityFrameworkCore.Plus.MySql
 
     public class MySqlDbContextConfigHandler : AbstractDbContextConfigHandler
     {
+        public static DbContextConfigHandlerInfo Info { get; } = new DbContextConfigHandlerInfo()
+        {
+            Id = typeof(MySqlDbContextConfigHandler).FullName,
+            Name = "MySQL",
+            Factory = () => new MySqlDbContextConfigHandler(),
+            TypeInfo = MySqlDbContextConfigHandlerSerializerContext.Default.MySqlDbContextConfigHandler
+        };
         [JsonIgnore]
-        public override string Name => "MySQL";
+        public override string Name => Info.Name;
+
         public string Host { get; set; }
         public int Port { get; set; } = 3306;
         public string Database { get; set; }

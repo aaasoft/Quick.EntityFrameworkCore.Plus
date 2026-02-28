@@ -13,8 +13,15 @@ namespace Quick.EntityFrameworkCore.Plus.SqlServer
 
     public class SqlServerDbContextConfigHandler : AbstractDbContextConfigHandler
     {
+        public static DbContextConfigHandlerInfo Info { get; } = new DbContextConfigHandlerInfo()
+        {
+            Id = typeof(SqlServerDbContextConfigHandler).FullName,
+            Name = "Microsoft SQL Server",
+            Factory = () => new SqlServerDbContextConfigHandler(),
+            TypeInfo = SqlServerDbContextConfigHandlerSerializerContext.Default.SqlServerDbContextConfigHandler
+        };
         [JsonIgnore]
-        public override string Name => "Microsoft SQL Server";
+        public override string Name => Info.Name;
 
         public string Host { get; set; }
         public int Port { get; set; } = 1433;

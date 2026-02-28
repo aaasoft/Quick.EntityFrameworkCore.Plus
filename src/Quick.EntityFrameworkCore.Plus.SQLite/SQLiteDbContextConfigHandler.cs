@@ -15,8 +15,15 @@ namespace Quick.EntityFrameworkCore.Plus.SQLite
 
     public class SQLiteDbContextConfigHandler : AbstractDbContextConfigHandler
     {
+        public static DbContextConfigHandlerInfo Info { get; } = new DbContextConfigHandlerInfo()
+        {
+            Id = typeof(SQLiteDbContextConfigHandler).FullName,
+            Name = "SQLite",
+            Factory = () => new SQLiteDbContextConfigHandler(),
+            TypeInfo = SQLiteDbContextConfigHandlerSerializerContext.Default.SQLiteDbContextConfigHandler
+        };
         [JsonIgnore]
-        public override string Name => "SQLite";
+        public override string Name => Info.Name;
 
         public string DataSource { get; set; }
         public string JournalMode { get; set; } = "DELETE";
