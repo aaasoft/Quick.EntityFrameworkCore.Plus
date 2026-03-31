@@ -57,7 +57,7 @@ namespace Quick.EntityFrameworkCore.Plus
                     //设置FieldIds不为null，代表是Post请求
                     dbConfigRequest.FieldIds = [];
                 }
-                var otherChildren = request.GetField(prefixFieldIds).Children;
+                var otherChildren = request.GetField(prefixFieldIds)?.Children;
                 if (otherChildren != null)
                     dbConfigRequestFieldList.AddRange(otherChildren);
 
