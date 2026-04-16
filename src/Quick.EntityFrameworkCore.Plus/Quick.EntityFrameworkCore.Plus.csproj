@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<TargetFrameworks>net8.0</TargetFrameworks>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<Version>2026.7.331</Version>
+		<Version>2026.8.416</Version>
    		<LangVersion>latest</LangVersion>
 		<Authors>scbeta</Authors>
 		<PackageProjectUrl>https://cnb.cool/scbeta/Quick.EntityFrameworkCore.Plus</PackageProjectUrl>
