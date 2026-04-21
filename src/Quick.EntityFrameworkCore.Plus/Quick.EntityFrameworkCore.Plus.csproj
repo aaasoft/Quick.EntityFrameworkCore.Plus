@@ -14,8 +14,8 @@
 	<ItemGroup>
 		<PackageReference Include="Quick.Utils" Version="2026.1.226" />
 		<PackageReference Include="Quick.Fields" Version="2026.3.321" />
-		<PackageReference Include="DbContextBackup" Version="2026.3.416" />
-		<PackageReference Include="DbContextBackup.Excel" Version="2026.3.416" />
+		<PackageReference Include="DbContextBackup" Version="2026.4.421" />
+		<PackageReference Include="DbContextBackup.Excel" Version="2026.4.421" />
 	</ItemGroup>
 
 </Project>
