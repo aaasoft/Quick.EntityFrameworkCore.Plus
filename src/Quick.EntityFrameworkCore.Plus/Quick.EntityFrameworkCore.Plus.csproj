@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<TargetFrameworks>net8.0</TargetFrameworks>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<Version>2026.9.421</Version>
+		<Version>2026.10.523</Version>
    		<LangVersion>latest</LangVersion>
 		<Authors>scbeta</Authors>
 		<PackageProjectUrl>https://github.com/aaasoft/Quick.EntityFrameworkCore.Plus</PackageProjectUrl>
