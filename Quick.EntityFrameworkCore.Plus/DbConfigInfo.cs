@@ -64,7 +64,7 @@ namespace Quick.EntityFrameworkCore.Plus
                 dbConfigHandler = DbUtils.GetDbContextConfigHandler(DbType, getModelsJsonSerializerContextFunc);
                 setDbContextConfigHandler(dbConfigHandler);
             }
-            dbConfigRequest.Fields = dbConfigRequestFieldList.ToArray();
+            dbConfigRequest.Fields = dbConfigRequestFieldList;
             var list = new List<FieldForGet>
         {
             new ()
@@ -105,7 +105,7 @@ namespace Quick.EntityFrameworkCore.Plus
                 Id = dbKey,
                 Type = FieldType.ContainerGroup,
                 Name = dbName,
-                Children = list.ToArray()
+                Children = list
             };
         }
     }

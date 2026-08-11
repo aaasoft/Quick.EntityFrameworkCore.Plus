@@ -45,7 +45,7 @@ namespace Quick.EntityFrameworkCore.Plus.Dm
             return $"\"{tableName}\"";
         }
 
-        public override FieldForGet[] QuickFields_Request(FieldsForPostContainer request = null)
+        public override List<FieldForGet> QuickFields_Request(FieldsForPostContainer request = null)
         {
             var isReadOnly = IsReadOnly(request);
             if (IsPost(request))
@@ -74,7 +74,7 @@ namespace Quick.EntityFrameworkCore.Plus.Dm
             {
                 list.Add(getRestoreGroup(request, isReadOnly));
             }
-            return [new() { Type = FieldType.ContainerTab, Children = list.ToArray() }];
+            return [new() { Type = FieldType.ContainerTab, Children = list }];
         }
 
         protected override IDbContextConfigHandler GetTestDbContextConfigHandler() => new DmDbContextConfigHandler()

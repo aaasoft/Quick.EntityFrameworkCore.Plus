@@ -28,7 +28,7 @@ namespace Quick.EntityFrameworkCore.Plus.SQLite
         public string DataSource { get; set; }
         public string JournalMode { get; set; } = "DELETE";
 
-        public override FieldForGet[] QuickFields_Request(FieldsForPostContainer request = null)
+        public override List<FieldForGet> QuickFields_Request(FieldsForPostContainer request = null)
         {
             var isReadOnly = IsReadOnly(request);
             if (IsPost(request))
@@ -68,7 +68,7 @@ namespace Quick.EntityFrameworkCore.Plus.SQLite
             {
                 list.Add(getRestoreGroup(request, isReadOnly));
             }
-            return [new() { Type = FieldType.ContainerTab, Children = list.ToArray() }];
+            return [new() { Type = FieldType.ContainerTab, Children = list }];
         }
 
 

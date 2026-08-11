@@ -11,7 +11,7 @@ namespace Quick.EntityFrameworkCore.Plus
         string Name { get; }
         void OnConfiguring(DbContextOptionsBuilder optionsBuilder);
         ///QuickFields的请求
-        FieldForGet[] QuickFields_Request(FieldsForPostContainer container = null);
+        List<FieldForGet> QuickFields_Request(FieldsForPostContainer container = null);
         /// <summary>
         /// 表名处理
         /// </summary>

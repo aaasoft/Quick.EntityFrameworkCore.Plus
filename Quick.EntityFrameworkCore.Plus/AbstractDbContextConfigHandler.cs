@@ -377,7 +377,7 @@ namespace Quick.EntityFrameworkCore.Plus
             {
                 Type = FieldType.ContainerGroup,
                 Name = "常规",
-                Children = list.ToArray()
+                Children = list
             };
         }
 
@@ -400,7 +400,7 @@ namespace Quick.EntityFrameworkCore.Plus
             {
                 Type = FieldType.ContainerGroup,
                 Name = "高级",
-                Children = list.ToArray()
+                Children = list
             };
         }
 
@@ -566,7 +566,7 @@ namespace Quick.EntityFrameworkCore.Plus
                                 new ()
                                 {
                                     Type = FieldType.ButtonGroup,
-                                    Children=operateButtonList.ToArray()
+                                    Children=operateButtonList
                                 }
                             ]
                         }
@@ -616,7 +616,7 @@ namespace Quick.EntityFrameworkCore.Plus
                     new ()
                     {
                         Type = FieldType.ContainerTableBody,
-                        Children = rowList.ToArray()
+                        Children = rowList
                     }
                 ]
             });
@@ -625,7 +625,7 @@ namespace Quick.EntityFrameworkCore.Plus
             {
                 Type = FieldType.ContainerGroup,
                 Name = "还原",
-                Children = list.ToArray()
+                Children = list
             };
         }
 
@@ -635,6 +635,6 @@ namespace Quick.EntityFrameworkCore.Plus
                 CommandTimeout = tmpCommandTimeout;
         }
 
-        public abstract FieldForGet[] QuickFields_Request(FieldsForPostContainer request = null);
+        public abstract List<FieldForGet> QuickFields_Request(FieldsForPostContainer request = null);
     }
 }
