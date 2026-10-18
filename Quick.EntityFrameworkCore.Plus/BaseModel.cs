@@ -1,28 +1,33 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Quick.EntityFrameworkCore.Plus
+namespace Quick.EntityFrameworkCore.Plus;
+
+/// <summary>
+/// 基础模型类
+/// </summary>
+/// <typeparam name="T"></typeparam>
+public abstract class BaseModel<T>
 {
     /// <summary>
-    /// 基础模型类
+    /// 编号
     /// </summary>
-    public abstract class BaseModel
+    [Key]
+    public virtual T Id { get; set; }
+
+    public override int GetHashCode()
     {
-        /// <summary>
-        /// 编号
-        /// </summary>
-        [Key]
-        public virtual string Id { get; set; }
+        return this.GetHashCode(
+            t => t.Id);
+    }
 
-        public override int GetHashCode()
-        {
-            return this.GetHashCode(
-                t => t.Id);
-        }
-
-        public override bool Equals(object obj)
-        {
-            return this.Equals(obj,
-                t => t.Id);
-        }
+    public override bool Equals(object obj)
+    {
+        return this.Equals(obj,
+            t => t.Id);
     }
 }
+
+/// <summary>
+/// 基础模型类
+/// </summary>
+public abstract class BaseModel : BaseModel<string> { }
