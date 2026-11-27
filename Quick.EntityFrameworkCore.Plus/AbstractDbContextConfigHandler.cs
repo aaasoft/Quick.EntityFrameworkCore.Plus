@@ -158,7 +158,7 @@ namespace Quick.EntityFrameworkCore.Plus
                 var backupFile = $"DbBackup_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.d3b";
                 //备份
                 using (var dbContext = getDbContextFunc())
-                    dbContextBackup.Backup(dbContext, backupFile, TableNameProcess);
+                    dbContextBackup.Backup(dbContext, backupFile);
                 //删除表结构
                 DatabaseEnsureDeleted(getDbContextFunc);
                 //创建表结构
@@ -190,8 +190,6 @@ namespace Quick.EntityFrameworkCore.Plus
         }
 
         public virtual void Validate() { }
-
-        public virtual string TableNameProcess(string tableName) => tableName;
 
         protected FieldForGet getCommonGroup(FieldsForPostContainer request, bool isReadOnly, params FieldForGet[] otherFields)
         {
@@ -279,7 +277,7 @@ namespace Quick.EntityFrameworkCore.Plus
                     {
                         var backupFile = $"{BackupFilePrefix}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.d3b";
                         var dbContextBackupContext = new DbContextBackup.D3b.D3bDbContextBackupContext(GetModelsJsonSerializerContextFunc);
-                        dbContextBackupContext.Backup(CreateDbContext(), Path.Combine(BackupDir, backupFile), TableNameProcess);
+                        dbContextBackupContext.Backup(CreateDbContext(), Path.Combine(BackupDir, backupFile));
                         list.Add(new FieldForGet()
                         {
                             Name = "成功",
@@ -308,7 +306,7 @@ namespace Quick.EntityFrameworkCore.Plus
                     {
                         var backupFile = $"{BackupFilePrefix}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.xlsx";
                         var dbContextBackupContext = new DbContextBackup.Excel.XlsxDbContextBackupContext(GetModelsJsonSerializerContextFunc);
-                        dbContextBackupContext.Backup(CreateDbContext(), Path.Combine(BackupDir, backupFile), TableNameProcess);
+                        dbContextBackupContext.Backup(CreateDbContext(), Path.Combine(BackupDir, backupFile));
                         list.Add(new FieldForGet()
                         {
                             Name = "成功",

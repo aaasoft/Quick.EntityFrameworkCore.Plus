@@ -13,12 +13,6 @@ namespace Quick.EntityFrameworkCore.Plus
         ///QuickFields的请求
         List<FieldForGet> QuickFields_Request(FieldsForPostContainer container = null);
         /// <summary>
-        /// 表名处理
-        /// </summary>
-        /// <param name="arg"></param>
-        /// <returns></returns>
-        string TableNameProcess(string arg);
-        /// <summary>
         /// 验证参数
         /// </summary>
         void Validate();

@@ -40,10 +40,6 @@ namespace Quick.EntityFrameworkCore.Plus.Dm
         }
         public string User { get; set; }
         public string Password { get; set; }
-        public override string TableNameProcess(string tableName)
-        {
-            return $"\"{tableName}\"";
-        }
 
         public override List<FieldForGet> QuickFields_Request(FieldsForPostContainer request = null)
         {
