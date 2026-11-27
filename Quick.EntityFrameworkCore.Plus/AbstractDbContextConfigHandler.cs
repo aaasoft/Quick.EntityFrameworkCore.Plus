@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Storage;
 using Quick.Fields;
 using Quick.Utils;
 using System.Data;
@@ -121,12 +122,14 @@ namespace Quick.EntityFrameworkCore.Plus
         {
             //确保数据库已创建
             DatabaseEnsureCreated();
-
             var columnChangedEntityTypeList = new List<IEntityType>();
             using (var dbContext = getDbContextFunc())
             {
                 //如果是表结构第一次创建，则创建成功后直接返回
                 if (dbContext.Database.EnsureCreated())
+                    return;
+                //如果不是关系型数据库，则直接返回
+                if (!dbContext.Database.IsRelational())
                     return;
 
                 var dbConnection = dbContext.Database.GetDbConnection();
