@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<TargetFrameworks>net8.0</TargetFrameworks>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<Version>2026.12.1018</Version>
+		<Version>2026.11.0</Version>
    		<LangVersion>latest</LangVersion>
 		<Authors>scbeta</Authors>
 		<PackageProjectUrl>https://github.com/aaasoft/Quick.EntityFrameworkCore.Plus</PackageProjectUrl>
@@ -13,7 +13,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Quick.Utils" Version="2026.4.809" />
-		<PackageReference Include="Quick.Fields" Version="2026.6.809" />
+		<PackageReference Include="Quick.Fields" Version="2026.10.0" />
 		<PackageReference Include="DbContextBackup" Version="2026.6.523" />
 		<PackageReference Include="DbContextBackup.Excel" Version="2026.6.523" />
 	</ItemGroup>
