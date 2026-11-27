@@ -3,6 +3,7 @@ using MongoDB.Driver;
 using Quick.Fields;
 using System.Data;
 using System.Data.Common;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 namespace Quick.EntityFrameworkCore.Plus.MongoDB
@@ -24,7 +25,8 @@ namespace Quick.EntityFrameworkCore.Plus.MongoDB
         public override string Name => Info.Name;
 
         public string Host { get; set; }
-        public int Port { get; set; } = 3306;
+        public int Port { get; set; } = 27017;
+        public string ReplicaSetName { get; set; }
         public string Database { get; set; }
         public string User { get; set; }
         public string Password { get; set; }
@@ -38,6 +40,7 @@ namespace Quick.EntityFrameworkCore.Plus.MongoDB
                 if (int.TryParse(request.GetFieldValue(nameof(Port)), out var tmpPort))
                     Port = tmpPort;
                 Database = request.GetFieldValue(nameof(Database));
+                ReplicaSetName = request.GetFieldValue(nameof(ReplicaSetName));
                 User = request.GetFieldValue(nameof(User));
                 Password = request.GetFieldValue(nameof(Password));
                 OnQuickFields_Request(request);
@@ -50,7 +53,9 @@ namespace Quick.EntityFrameworkCore.Plus.MongoDB
                     new (){ Id=nameof(Database), Name="数据库", Input_AllowBlank=false, Type = FieldType.InputText, Value=Database,Input_ReadOnly = isReadOnly },
                     new (){ Id=nameof(User), Name="用户名", Input_AllowBlank=false, Type = FieldType.InputText, Value=User,Input_ReadOnly = isReadOnly },
                     new (){ Id=nameof(Password), Name="密码", Input_AllowBlank=false, Type = FieldType.InputPassword, Value=Password,Input_ReadOnly = isReadOnly }
-                )
+                ),
+                getAdvanceGroup(isReadOnly,
+                    new FieldForGet(){ Id=nameof(ReplicaSetName), Name="副本集名称", Input_AllowBlank=false, Type = FieldType.InputText, Value=ReplicaSetName,Input_ReadOnly = isReadOnly })
             };
             if (EnableOperateButtons && EnableRestoreButtons)
             {
@@ -59,13 +64,30 @@ namespace Quick.EntityFrameworkCore.Plus.MongoDB
             return [new() { Type = FieldType.ContainerTab, Children = list }];
         }
 
+        protected override DbContext CreateDbContext()
+        {
+            var dbContext = base.CreateDbContext();
+            if (string.IsNullOrEmpty(ReplicaSetName))
+                dbContext.Database.AutoTransactionBehavior = AutoTransactionBehavior.Never;
+            return dbContext;
+        }
+
+        public override DbContext CreateDbContextInstance([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] Type dbContextType)
+        {
+            var dbContext = base.CreateDbContextInstance(dbContextType);
+            if (string.IsNullOrEmpty(ReplicaSetName))
+                dbContext.Database.AutoTransactionBehavior = AutoTransactionBehavior.Never;
+            return dbContext;
+        }
+
         protected override IDbContextConfigHandler GetTestDbContextConfigHandler() => new MongoDbContextConfigHandler()
         {
             Host = Host,
             Port = Port,
             User = User,
             Password = Password,
-            Database = "admin"
+            Database = "admin",
+            ReplicaSetName = ReplicaSetName
         };
 
         public override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -73,7 +95,10 @@ namespace Quick.EntityFrameworkCore.Plus.MongoDB
             optionsBuilder.UseMongoDB(new MongoClientSettings()
             {
                 Server = new MongoServerAddress(Host, Port),
-                Credential = MongoCredential.CreateCredential(Database, User, Password)
+                Credential = MongoCredential.CreateCredential("admin", User, Password),
+                ReplicaSetName = ReplicaSetName,
+                ConnectTimeout = TimeSpan.FromSeconds(ConnectTimeout),
+                ServerSelectionTimeout = TimeSpan.FromSeconds(ConnectTimeout)
             }, Database);
         }
 

@@ -32,6 +32,10 @@ namespace Quick.EntityFrameworkCore.Plus
         [JsonIgnore]
         public Func<Type, JsonSerializerContext> GetModelsJsonSerializerContextFunc { get; set; }
         /// <summary>
+        /// 连接超时时间（单位：秒）
+        /// </summary>
+        public int ConnectTimeout { get; set; } = 5;
+        /// <summary>
         /// 命令超时时间（单位：秒）
         /// </summary>
         public int CommandTimeout { get; set; } = 60;
@@ -80,7 +84,7 @@ namespace Quick.EntityFrameworkCore.Plus
 
         protected abstract string[] GetTableColumns(DbConnection dbConnection, string tableName);
 
-        private DbContext CreateDbContext()
+        protected virtual DbContext CreateDbContext()
         {
             if (CreateDbContextForOperateFunc == null)
                 return new ConfigDbContext(this);
@@ -388,6 +392,16 @@ namespace Quick.EntityFrameworkCore.Plus
                 list.AddRange(otherFields);
             list.Add(new()
             {
+                Id = nameof(ConnectTimeout),
+                Name = "连接超时",
+                Description = "单位：秒",
+                Input_AllowBlank = false,
+                Type = FieldType.InputNumber,
+                Input_ReadOnly = isReadOnly,
+                Value = ConnectTimeout.ToString()
+            });    
+            list.Add(new()
+            {
                 Id = nameof(CommandTimeout),
                 Name = "命令超时",
                 Description = "单位：秒",
@@ -631,6 +645,8 @@ namespace Quick.EntityFrameworkCore.Plus
 
         protected void OnQuickFields_Request(FieldsForPostContainer request)
         {
+            if (int.TryParse(request.GetFieldValue(nameof(ConnectTimeout)), out var tmpConnectTimeout))
+                ConnectTimeout = tmpConnectTimeout;
             if (int.TryParse(request.GetFieldValue(nameof(CommandTimeout)), out var tmpCommandTimeout))
                 CommandTimeout = tmpCommandTimeout;
         }

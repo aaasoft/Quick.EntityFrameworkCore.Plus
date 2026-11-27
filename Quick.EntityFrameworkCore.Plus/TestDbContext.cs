@@ -21,7 +21,8 @@ namespace Quick.EntityFrameworkCore.Plus
 
         public void Test()
         {
-            Database.ExecuteSqlRaw("select 1;");
+            if (!Database.CanConnect())
+                throw new IOException("Connect failed");
         }
     }
 }
