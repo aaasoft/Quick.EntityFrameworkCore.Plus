@@ -1,5 +1,6 @@
 <Solution>
   <Project Path="Quick.EntityFrameworkCore.Plus.Dm/Quick.EntityFrameworkCore.Plus.Dm.csproj" />
+  <Project Path="Quick.EntityFrameworkCore.Plus.MongoDB/Quick.EntityFrameworkCore.Plus.MongoDB.csproj" />
   <Project Path="Quick.EntityFrameworkCore.Plus.MySql/Quick.EntityFrameworkCore.Plus.MySql.csproj" />
   <Project Path="Quick.EntityFrameworkCore.Plus.SQLite/Quick.EntityFrameworkCore.Plus.SQLite.csproj" />
   <Project Path="Quick.EntityFrameworkCore.Plus.SqlServer/Quick.EntityFrameworkCore.Plus.SqlServer.csproj" />

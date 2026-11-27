@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net8.0</TargetFrameworks>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Version>2026.12.1018</Version>
+		<Authors>scbeta</Authors>
+		<LangVersion>latest</LangVersion>
+		<PackageProjectUrl>https://github.com/aaasoft/Quick.EntityFrameworkCore.Plus</PackageProjectUrl>
+		<Description>Quick.EntityFrameworkCore.Plus的MongoDB数据库支持。</Description>
+		<RepositoryUrl>https://github.com/aaasoft/Quick.EntityFrameworkCore.Plus</RepositoryUrl>
+	</PropertyGroup>
+	
+	<ItemGroup>
+		<ProjectReference Include="..\Quick.EntityFrameworkCore.Plus\Quick.EntityFrameworkCore.Plus.csproj" />
+	  <PackageReference Include="MongoDB.EntityFrameworkCore" Version="8.4.6" />
+	</ItemGroup>
+</Project>
